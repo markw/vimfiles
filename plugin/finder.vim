@@ -4,6 +4,9 @@ endif
 
 au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
 
+
+"au BufEnter,VimEnter * exe 'setlocal makeprg=m3\\ -f\\ '.findfile('pom.xml','.;').'\\ test\\ -Dtest='.fnamemodify('%','t')
+
 function! s:ActivateBuffer(name) "{{{1
   if has('GUI')
     exe ':drop '.a:name
@@ -12,6 +15,7 @@ function! s:ActivateBuffer(name) "{{{1
   endif
   return
 endfunction
+
 
 function! <SID>PickFromList(candidates) "{{{1
   let picklist = ['Select one:']
@@ -44,13 +48,46 @@ function! <SID>FindInIndexFile(s)
   call s:ActivateBuffer(filenames[index-1])
 endf
 
+
 function! <SID>CreateVimIndexes() "{{{1
   echo "Building index file: ".g:project_root_dir.'/.vimindex'
   call system('find '. g:project_root_dir .'/*/src  -type f -fprint '. g:project_root_dir. '/.vimindex 2> /dev/null')
+  echo "Done."
 endf
 
+function! <SID>Maven(file)
+  if &modified == 1
+    exe 'w'
+  endif
+  let savedir = getcwd()
+  let savemake = &makeprg
+  let pom = findfile('pom.xml','.;')
+  let pomdir = fnamemodify(pom,":p:h")
+  let testname = fnamemodify(a:file,":r")
+
+  if testname !~ 'Test$'
+    let testname = testname.'Test'
+  endif
+
+  let cmd = 'm3\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+  exe "set makeprg=".cmd
+  
+  setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
+
+  exe "lcd ".pomdir
+
+  make!
+  "echo &makeprg
+
+  silent exe "setlocal makeprg=".savemake
+  silent exe "lcd ".savedir
+
+endf
 
 command! -nargs=0 Index call <SID>CreateVimIndexes()
 command! -nargs=1 Find  call <SID>FindInIndexFile(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
+
+nmap <F9> :call <SID>Maven(expand("%"))<cr>
+imap <F9> <esc>w<cr>:call <SID>Maven(expand("%"))<cr>
