@@ -69,7 +69,7 @@ function! <SID>Maven(file)
     let testname = testname.'Test'
   endif
 
-  let cmd = 'm3\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+  let cmd = 'm3\ -o\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
   exe "set makeprg=".cmd
   
   setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
