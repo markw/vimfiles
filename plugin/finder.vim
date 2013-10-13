@@ -56,7 +56,7 @@ function! <SID>CreateVimIndexes() "{{{1
   echo "Done."
 endf
 
-function! <SID>Maven(file)
+function! <SID>MavenUnitTest(file)
   if &modified == 1
     exe 'w'
   endif
@@ -90,5 +90,5 @@ command! -nargs=1 Find  call <SID>FindInIndexFile(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 
-nmap <F9> :call <SID>Maven(expand("%"))<cr>
+nmap <F9> :call <SID>MavenUnitTest(expand("%"))<cr>
 imap <F9> <esc>w<cr>:call <SID>Maven(expand("%"))<cr>
