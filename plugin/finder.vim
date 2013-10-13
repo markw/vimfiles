@@ -49,6 +49,11 @@ function! <SID>FindInIndexFile(s)
   call s:ActivateBuffer(filenames[index-1])
 endf
 
+function! <SID>FindFilesInIndex(files)
+  for f in split(a:files)
+    call <SID>FindInIndexFile(f)
+  endfor
+endf
 
 function! <SID>CreateVimIndexes() "{{{1
   echo "Building index file: ".g:project_root_dir.'/.vimindex'
@@ -86,7 +91,7 @@ function! <SID>MavenUnitTest(file)
 endf
 
 command! -nargs=0 Index call <SID>CreateVimIndexes()
-command! -nargs=1 Find  call <SID>FindInIndexFile(<q-args>)
+command! -nargs=* Find  call <SID>FindFilesInIndex(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 
