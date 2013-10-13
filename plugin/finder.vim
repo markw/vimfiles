@@ -33,14 +33,20 @@ function! <SID>FindInIndexFile(s)
   "let pattern = substitute(a:s,'\([A-Z]\)','.*\1.*', 'g').'.*'
   "echo pattern
   let filenames = split(system("grep '".pattern."' ". g:project_root_dir ."/.vimindex"))
+  let numMatches = len(filenames)
 
-  if 0 == len(filenames)
+  if 0 == numMatches
     echo "No matches."
     return
   endif
 
-  if 1 == len(filenames)
+  if 1 == numMatches
     call s:ActivateBuffer(filenames[0])
+    return
+  endif
+
+  if 100 < numMatches
+    echo "Too many matches: ".numMatches
     return
   endif
 
@@ -90,8 +96,14 @@ function! <SID>MavenUnitTest(file)
 
 endf
 
+function <SID>GrepFromProjectRoot(s)
+  setlocal grepprg=grep\ -n\ -R
+  exe ':grep '.a:s.' '.g:project_root_dir.'/*/src'
+endf
+
 command! -nargs=0 Index call <SID>CreateVimIndexes()
-command! -nargs=* Find  call <SID>FindFilesInIndex(<q-args>)
+command! -nargs=+ Find  call <SID>FindFilesInIndex(<q-args>)
+command! -nargs=1 Grep  call <SID>GrepFromProjectRoot(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 
