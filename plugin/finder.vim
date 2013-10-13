@@ -2,10 +2,11 @@ if !exists('g:project_root_dir')
   let g:project_root_dir = '/home/mwilliams/p4-clients/main'
 endif
 
+if !exists('g:maven_exec')
+  let g:maven_exec= 'm3'
+endif
+
 au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
-
-
-"au BufEnter,VimEnter * exe 'setlocal makeprg=m3\\ -f\\ '.findfile('pom.xml','.;').'\\ test\\ -Dtest='.fnamemodify('%','t')
 
 function! s:ActivateBuffer(name) "{{{1
   if has('GUI')
@@ -69,7 +70,7 @@ function! <SID>Maven(file)
     let testname = testname.'Test'
   endif
 
-  let cmd = 'm3\ -o\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+  let cmd = g:maven_exec.'\ -o\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
   exe "set makeprg=".cmd
   
   setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
