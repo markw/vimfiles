@@ -102,7 +102,7 @@ function <SID>GrepFromProjectRoot(s)
 endf
 
 command! -nargs=0 Index call <SID>CreateVimIndexes()
-command! -nargs=+ Find  call <SID>FindFilesInIndex(<q-args>)
+command! -nargs=+ -complete=file_in_path Find  call <SID>FindFilesInIndex(<q-args>)
 command! -nargs=1 Grep  call <SID>GrepFromProjectRoot(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
