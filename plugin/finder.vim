@@ -6,8 +6,6 @@ if !exists('g:maven_exec')
   let g:maven_exec= 'm3'
 endif
 
-au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
-
 function! s:ActivateBuffer(name) "{{{1
   if has('GUI')
     exe ':drop '.a:name
@@ -28,11 +26,13 @@ function! <SID>PickFromList(candidates) "{{{1
   return inputlist(picklist)
 endfunction
 
-function! <SID>FindInIndexFile(s)
+function! <SID>GrepIndexFile(s)            "{{{1
   let pattern = substitute(a:s,'\([A-Z]\)','[a-z1-9]*\1[a-z1-9]*', 'g').'.*'
-  "let pattern = substitute(a:s,'\([A-Z]\)','.*\1.*', 'g').'.*'
-  "echo pattern
-  let filenames = split(system("grep '".pattern."' ". g:project_root_dir ."/.vimindex"))
+  return split(system("grep '".pattern."' ". g:project_root_dir ."/.vimindex"))
+endf
+
+function! <SID>FindInIndexFile(s)  "{{{1
+  let filenames = <SID>GrepIndexFile(a:s)
   let numMatches = len(filenames)
 
   if 0 == numMatches
@@ -55,19 +55,20 @@ function! <SID>FindInIndexFile(s)
   call s:ActivateBuffer(filenames[index-1])
 endf
 
-function! <SID>FindFilesInIndex(files)
+
+function! <SID>FindFilesInIndex(files)  "{{{1
   for f in split(a:files)
     call <SID>FindInIndexFile(f)
   endfor
 endf
 
-function! <SID>CreateVimIndexes() "{{{1
+function! <SID>CreateVimIndexes()    "{{{1
   echo "Building index file: ".g:project_root_dir.'/.vimindex'
   call system('find '. g:project_root_dir .'/*/src  -type f -fprint '. g:project_root_dir. '/.vimindex 2> /dev/null')
   echo "Done."
 endf
 
-function! <SID>MavenUnitTest(file)
+function! <SID>MavenUnitTest(file)  "{{{1
   if &modified == 1
     exe 'w'
   endif
@@ -81,7 +82,7 @@ function! <SID>MavenUnitTest(file)
     let testname = testname.'Test'
   endif
 
-  let cmd = g:maven_exec.'\ -o\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+  let cmd = g:maven_exec.'\ -e\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
   exe "set makeprg=".cmd
   
   setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
@@ -96,16 +97,27 @@ function! <SID>MavenUnitTest(file)
 
 endf
 
-function <SID>GrepFromProjectRoot(s)
+function! <SID>GrepFromProjectRoot(s) "{{{1
   setlocal grepprg=grep\ -n\ -R
   exe ':grep '.a:s.' '.g:project_root_dir.'/*/src'
 endf
 
+function! <SID>AutoComplete(A,L,P)   "{{{1
+  let filenames = []
+  for f in <SID>GrepIndexFile(a:A)
+      call add(filenames,fnamemodify(f,":t"))
+  endfor
+  return filenames
+endf
+
+"}}}1
 command! -nargs=0 Index call <SID>CreateVimIndexes()
-command! -nargs=+ -complete=file_in_path Find  call <SID>FindFilesInIndex(<q-args>)
+command! -nargs=+ -complete=customlist,<SID>AutoComplete Find  call <SID>FindFilesInIndex(<q-args>)
 command! -nargs=1 Grep  call <SID>GrepFromProjectRoot(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 
 nmap <F9> :call <SID>MavenUnitTest(expand("%"))<cr>
 imap <F9> <esc>w<cr>:call <SID>Maven(expand("%"))<cr>
+
+au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
