@@ -82,7 +82,7 @@ function! <SID>MavenUnitTest(file)  "{{{1
     let testname = testname.'Test'
   endif
 
-  let cmd = g:maven_exec.'\ -e\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+  let cmd = g:maven_exec.'\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
   exe "set makeprg=".cmd
   
   setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
