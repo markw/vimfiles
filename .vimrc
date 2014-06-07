@@ -35,6 +35,12 @@ if len(cmd) > 0
 endif
 endf
 
+"netrw default to tree view
+let g:netrw_liststyle=3
+
+"get rid of the banner
+let g:netrw_banner=0
+
 color desert
 
 "todo: move to separate plugin
