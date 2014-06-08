@@ -1,7 +1,3 @@
-if !exists('g:project_root_dir')
-  let g:project_root_dir = '/home/mwilliams/p4-clients/main'
-endif
-
 if !exists('g:maven_exec')
   let g:maven_exec= 'm3'
 endif
@@ -15,6 +11,21 @@ function! s:ActivateBuffer(name) "{{{1
   return
 endfunction
 
+function! s:FindProjectRoot() "{{{1
+
+  function! FindFileRecursive(file,dir,curr)
+    let found = findfile(a:file,a:dir.';')
+    if len(found)
+      return FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
+    elseif len(a:curr)
+      return a:curr
+    else
+      throw "No project root"
+    endif
+  endf
+
+  return FindFileRecursive('pom.xml','.','')
+endfunction
 
 function! <SID>PickFromList(candidates) "{{{1
   let picklist = ['Select one:']
@@ -28,7 +39,7 @@ endfunction
 
 function! <SID>GrepIndexFile(s)            "{{{1
   let pattern = substitute(a:s,'\([A-Z]\)','[a-z1-9]*\1[a-z1-9]*', 'g').'.*'
-  return split(system("grep '".pattern."' ". g:project_root_dir ."/.vimindex"))
+  return split(system("grep '".pattern."' ". s:FindProjectRoot() ."/.vimindex"))
 endf
 
 function! <SID>FindInIndexFile(s)  "{{{1
@@ -63,8 +74,9 @@ function! <SID>FindFilesInIndex(files)  "{{{1
 endf
 
 function! <SID>CreateVimIndexes()    "{{{1
-  echo "Building index file: ".g:project_root_dir.'/.vimindex'
-  call system('find '. g:project_root_dir .'/*/src  -type f -fprint '. g:project_root_dir. '/.vimindex 2> /dev/null')
+  let root = s:FindProjectRoot()
+  echo "Building index file: ".root.'/.vimindex'
+  call system('find '. root .'/*/src  -type f -fprint '. root . '/.vimindex 2> /dev/null')
   echo "Done."
 endf
 
@@ -99,7 +111,7 @@ endf
 
 function! <SID>GrepFromProjectRoot(s) "{{{1
   setlocal grepprg=grep\ -n\ -R
-  exe ':grep '.a:s.' '.g:project_root_dir.'/*/src'
+  exe ':grep '.a:s.' '.s:FindProjectRoot().'/*/src'
 endf
 
 function! <SID>AutoComplete(A,L,P)   "{{{1
