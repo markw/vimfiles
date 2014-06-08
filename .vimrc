@@ -21,6 +21,7 @@ hi comment cterm=bold
 
 nnoremap <c-tab> :bnext<cr>
 nnoremap <s-c-tab> :bprev<cr>
+nnoremap <F2> :NERDTree<cr>
 
 function! UrlEscape()
 let c = getline(".")[col(".") - 1]
@@ -35,13 +36,10 @@ if len(cmd) > 0
 endif
 endf
 
-"netrw default to tree view
-let g:netrw_liststyle=3
-
-"get rid of the banner
-let g:netrw_banner=0
-
 color desert
+
+let NERDTreeHijackNetrw=1
+let NERDTreeIgnore=['target','\.class$', '\~$']
 
 "todo: move to separate plugin
 autocmd BufNewFile *.xsl  :0r ~/.vim/templates/template.xsl
@@ -53,3 +51,4 @@ autocmd BufNewFile *.groovy  :0r ~/.vim/templates/template.groovy
 
 autocmd BufLeave *.xsl aunmenu Xsl
 au BufReadCmd *.jar,*.xpi call zip#Browse(expand("<amatch>"))
+
