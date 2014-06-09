@@ -24,7 +24,7 @@ function! s:FindProjectRoot() "{{{1
     endif
   endf
 
-  return FindFileRecursive('pom.xml','.','')
+  return fnamemodify(FindFileRecursive('pom.xml','.',''),":p:h")
 endfunction
 
 function! <SID>PickFromList(candidates) "{{{1

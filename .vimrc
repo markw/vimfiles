@@ -18,11 +18,10 @@ set showcmd
 filetype plugin indent on
 syntax on
 
-hi comment cterm=bold
 
 nnoremap <c-tab> :bnext<cr>
 nnoremap <s-c-tab> :bprev<cr>
-nnoremap <F2> :NERDTree<cr>
+nnoremap <F2> :NERDTreeToggle<cr>
 
 function! UrlEscape()
 let c = getline(".")[col(".") - 1]
@@ -53,3 +52,10 @@ autocmd BufNewFile *.groovy  :0r ~/.vim/templates/template.groovy
 autocmd BufLeave *.xsl aunmenu Xsl
 au BufReadCmd *.jar,*.xpi call zip#Browse(expand("<amatch>"))
 
+hi cursorline cterm=NONE ctermbg=DarkGray
+hi comment cterm=bold
+
+au BufEnter * set cursorline
+au BufLeave * set nocursorline
+au WinEnter * set cursorline
+au WinLeave * set nocursorline
