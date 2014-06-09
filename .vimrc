@@ -1,5 +1,9 @@
 set nocompatible
-execute pathogen#infect()
+
+set rtp+=~/.vim/bundle/vundle/
+filetype off
+call vundle#begin()
+
 
 set expandtab 
 set ruler nowrap nobackup
@@ -14,9 +18,6 @@ set novisualbell noerrorbells
 set vb t_vb=
 set hidden
 set showcmd
-
-filetype plugin indent on
-syntax on
 
 
 nnoremap <c-tab> :bnext<cr>
@@ -36,7 +37,6 @@ if len(cmd) > 0
 endif
 endf
 
-color desert
 
 let NERDTreeHijackNetrw=1
 let NERDTreeIgnore=['target','\.class$', '\~$']
@@ -52,10 +52,24 @@ autocmd BufNewFile *.groovy  :0r ~/.vim/templates/template.groovy
 autocmd BufLeave *.xsl aunmenu Xsl
 au BufReadCmd *.jar,*.xpi call zip#Browse(expand("<amatch>"))
 
-hi cursorline cterm=NONE ctermbg=DarkGray
 hi comment cterm=bold
 
 au BufEnter * set cursorline
 au BufLeave * set nocursorline
 au WinEnter * set cursorline
 au WinLeave * set nocursorline
+
+Plugin 'gmarik/Vundle.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'ervandew/supertab'
+Plugin 'tomtom/tlib_vim'
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'tpope/vim-fugitive'
+Plugin 'garbas/vim-snipmate'
+
+filetype plugin indent on
+syntax on
+
+au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
+color desert
