@@ -5,7 +5,7 @@
 color desert
 "color mango
 
-set lines=999 columns=999
+set lines=60 columns=160
 
 "set guifont=Droid\ Sans\ Mono\ Slashed\ 10
 "set guifont=DejaVu\ Sans\ Mono\ 10
@@ -19,17 +19,10 @@ set guioptions-=r
 set guioptions-=R
 winpos 0 0
 
-" no visualbell
-set vb t_vb=
-
 " highlight current line
-"autocmd WinLeave * setlocal nocursorline
-"autocmd WinEnter * setlocal cursorline
-"autocmd BufLeave * setlocal nocursorline
-"autocmd BufEnter * setlocal cursorline 
+set cursorline
 
 set guitablabel=%{GuiTabLabel()}
-"set showtabline=1
 
 
 function! GuiTabLabel()
@@ -47,5 +40,3 @@ function! GuiTabLabel()
   " Append the buffer name
   return label . fnamemodify(bufname(bufnrlist[tabpagewinnr(v:lnum) - 1]),":t")
 endfunction
-
-nnoremap <silent> <F8> :TlistToggle<CR>

@@ -10,7 +10,8 @@ set noshowmatch
 set autochdir
 set number
 set directory=~/tmp,/tmp
-set novisualbell noerrorbells
+set novisualbell noerrorbells 
+set vb t_vb=
 set hidden
 set showcmd
 
