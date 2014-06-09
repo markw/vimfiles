@@ -1,9 +1,23 @@
 set nocompatible
 
+"----- Vundle start
 set rtp+=~/.vim/bundle/vundle/
 filetype off
 call vundle#begin()
 
+Plugin 'gmarik/Vundle.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'ervandew/supertab'
+Plugin 'tomtom/tlib_vim'
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'tpope/vim-fugitive'
+Plugin 'garbas/vim-snipmate'
+
+"----- Vundle end
+
+filetype plugin indent on
+syntax on
 
 set expandtab 
 set ruler nowrap nobackup
@@ -41,7 +55,7 @@ endf
 let NERDTreeHijackNetrw=1
 let NERDTreeIgnore=['target','\.class$', '\~$']
 
-"todo: move to separate plugin
+"todo: move somewhere else
 autocmd BufNewFile *.xsl  :0r ~/.vim/templates/template.xsl
 autocmd BufNewFile *.html :0r ~/.vim/templates/template.html
 autocmd BufNewFile *.jsp  :0r ~/.vim/templates/template.jsp
@@ -58,18 +72,6 @@ au BufEnter * set cursorline
 au BufLeave * set nocursorline
 au WinEnter * set cursorline
 au WinLeave * set nocursorline
-
-Plugin 'gmarik/Vundle.vim'
-Plugin 'scrooloose/nerdtree'
-Plugin 'ervandew/supertab'
-Plugin 'tomtom/tlib_vim'
-Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'tpope/vim-fugitive'
-Plugin 'garbas/vim-snipmate'
-
-filetype plugin indent on
-syntax on
 
 au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
 color desert
