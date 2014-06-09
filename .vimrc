@@ -1,10 +1,9 @@
 set nocompatible
 
-"----- Vundle start
 set rtp+=~/.vim/bundle/vundle/
 filetype off
-call vundle#begin()
 
+call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
@@ -13,8 +12,7 @@ Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'tpope/vim-fugitive'
 Plugin 'garbas/vim-snipmate'
-
-"----- Vundle end
+call vundle#end()
 
 filetype plugin indent on
 syntax on
