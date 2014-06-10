@@ -4,7 +4,7 @@ set rtp+=~/.vim/bundle/vundle/
 filetype off
 
 call vundle#begin()
-Plugin 'gmarik/Vundle.vim'
+Plugin 'gmarik/vundle'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
 Plugin 'tomtom/tlib_vim'
