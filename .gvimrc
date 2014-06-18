@@ -17,6 +17,7 @@ set clipboard=unnamed
 set guioptions-=T
 set guioptions-=r
 set guioptions-=R
+set t_vb=
 winpos 0 0
 
 " highlight current line

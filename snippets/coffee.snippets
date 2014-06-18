@@ -1,0 +1,95 @@
+snippet bb-view
+	define [
+		'jquery'
+		'backbone'
+		'underscore_string'
+		'SESSION'
+		'CONTENT'
+		'javascript/common/util/template2'
+		"text!javascript/${0:path}/${1:My}View.html"
+		"text!javascript/$0/$1View.keys"
+	], ($, Backbone, _, session, CONTENT, templateFactory, html, keys) ->
+
+		CONTENT.registerKeys(_.lines(keys))
+		template = templateFactory.create()
+
+		class $1View extends Backbone.View
+			template: template.compile(html)
+
+			initialize: ()->
+
+			render: ->
+				@.$el.html(@.template())
+				@
+
+snippet bb-view-test
+	define [
+		'sinon-qunit'
+		'jquery'
+		'SESSION'
+		'cs!javascript/${1:path}/${0:My}View'
+		'javascript/member-rest-specs'
+	], (sinon, $, session, userService, $0View, specUtil ) ->
+
+		view = null
+		submitStub = null
+		sinon.stubProperty session, "companyId", 123
+
+		module "$0View tests",  {
+			setup: ->
+				submitStub = sinon.stub $.prototype, "ajaxSubmit"
+				view = new $0View()
+				userService.hasAuthority.returns(false)
+
+			teardown: ->
+				submitStub.restore()
+
+		}
+
+		test "render", ->
+			view.render()
+			equal view.$("#some-id"), "some value"
+
+snippet bb-model
+	define ['backbone', 'jquery', 'SESSION' ], (Backbone, $, session) ->
+		class ${0:Model} extends Backbone.Model
+
+			idAttribute: "id"
+
+			id: ->
+				session.contactId
+
+			url: ->
+				"/member/api/contact/#{session.contactId}/$0"
+
+			defaults: ->
+				prop1: "prop1"
+				prop2: true
+
+snippet bb-model-test
+	define [
+		'jquery'
+		'sinon-qunit'
+		'javascript/member-rest-specs'
+		'SESSION'
+		'cs!javascript/${2:path-to-model}/${1:Model}'
+	], ($, sinon, specUtil, session, $1)->
+		
+		getSpec = specUtil.getSpec("get a $0")
+
+		sinon.stubProperty(session, "contactId", 1)
+
+		module('$1 tests', {
+			setup: ->
+				sinon.stub($, "ajax")
+
+			teardown: ->
+				$.ajax.restore()
+		})
+
+		test "fetch model", ->
+			model = new $0()
+			$.ajax.yieldsTo("success", {})
+			model.fetch()
+			equal(model.get("something"), "something")
+

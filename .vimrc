@@ -9,9 +9,12 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
 Plugin 'tomtom/tlib_vim'
 Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'tpope/vim-fugitive'
 Plugin 'garbas/vim-snipmate'
+Plugin 'tpope/vim-fugitive'
+Plugin 'pangloss/vim-javascript'
+Plugin 'kchmck/vim-coffee-script'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'mihaifm/vimpanel'
 call vundle#end()
 
 filetype plugin indent on
@@ -22,7 +25,6 @@ set ruler nowrap nobackup
 set copyindent autoindent smartindent
 set tabstop=4 shiftwidth=4 shiftround
 set nostartofline
-set noshowmatch
 set autochdir
 set number
 set directory=~/tmp,/tmp
@@ -31,10 +33,8 @@ set vb t_vb=
 set hidden
 set showcmd
 
-
 nnoremap <c-tab> :bnext<cr>
 nnoremap <s-c-tab> :bprev<cr>
-nnoremap <F2> :NERDTreeToggle<cr>
 
 function! UrlEscape()
 let c = getline(".")[col(".") - 1]
@@ -73,3 +73,18 @@ au WinLeave * set nocursorline
 
 au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
 color desert
+
+"let g:VimpanelStorage='~/.vim/.vimpanel'
+
+"cabbrev ss VimpanelSessionMake
+"cabbrev sl VimpanelSessionLoad
+"cabbrev vp Vimpanel
+"cabbrev vl VimpanelLoad
+"cabbrev vc VimpanelCreate
+"cabbrev ve VimpanelEdit
+"cabbrev vr VimpanelRemove
+
+"nnoremap <F2> :VimpanelToggleLeft<cr>
+nnoremap <F2> :NERDTreeToggle<cr>
+
+"set regexpengine=1
