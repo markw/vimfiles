@@ -9,28 +9,3 @@ snippet fp
 	${1:function_name}: function (${2:argument}) {
 		${0:// body...}
 	}
-
-# backbone view
-snippet bb-view
-	define([
-		'jquery',
-		'backbone',
-		'tpl!/templates/${1:template_file}.html',
-	], function ($, Backbone, template) {
-
-		return Backbone.View.extend({
-
-			initialize: function () {
-				this.listenTo(this.model, "change", render);
-
-				this.listenToOnce(this, "render", function() { 
-					this.model.fetch(); 
-				});
-			},
-			render: function () {
-				this.$el.html(template());
-				this.trigger("render");
-				return this;
-			}
-		});
-	});

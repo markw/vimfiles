@@ -13,7 +13,6 @@ Plugin 'garbas/vim-snipmate'
 Plugin 'tpope/vim-fugitive'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
-"Plugin 'SirVer/ultisnips'
 "Plugin 'mihaifm/vimpanel'
 call vundle#end()
 
@@ -86,5 +85,3 @@ color desert
 
 "nnoremap <F2> :VimpanelToggleLeft<cr>
 nnoremap <F2> :NERDTreeToggle<cr>
-
-"set regexpengine=1
