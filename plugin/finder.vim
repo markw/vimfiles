@@ -90,13 +90,18 @@ function! <SID>MavenUnitTest(file)  "{{{1
   let pomdir = fnamemodify(pom,":p:h")
   let testname = fnamemodify(a:file,":r")
 
-  if testname !~ 'Test$'
-    let testname = testname.'Test'
+  if &ft == 'coffee' || &ft == 'javascript'
+    let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.testname
   endif
 
-  "let cmd = g:maven_exec.'\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
-  let cmd = g:maven_exec.'\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.testname
-  exe "set makeprg=".cmd
+  if &ft == 'java'
+    if testname !~ 'Test$'
+        let testname = testname.'Test'
+    endif
+    let cmd = g:maven_exec.'\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+  endif
+
+  exe "setlocal makeprg=".cmd
   
   setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
 
