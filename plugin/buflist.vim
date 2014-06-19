@@ -25,7 +25,7 @@ function! <sid>GenerateList()
     let i = i+1
   endwhile
   call sort(s:buflist)
-  silent! exe 'silent! '.(width+2).' vne __buffer_list__'
+  silent! exe ':silent! :vertical :topleft :' . (width+2) .'split __buffer_list__'
   for [bufname,bufnum] in s:buflist  
     if cur_buf == bufnum | let cursor_line = line('$') | endif
     call append(line('$'), bufname)
@@ -34,7 +34,9 @@ function! <sid>GenerateList()
   call cursor(cursor_line,1)
   setlocal nomodifiable nobuflisted nowrap nonumber cursorline
   setlocal buftype=nofile bufhidden=delete
-  map <silent><buffer> <cr> :call <sid>EditSelectedBuffer()<cr>
+  map <silent><buffer><cr> :call <sid>EditSelectedBuffer()<cr>
+  map <silent><buffer>s :call <sid>EditSelectedBufferInSplit()<cr>
+  map <silent><buffer>v :call <sid>EditSelectedBufferInVSplit()<cr>
   map <silent><buffer>q :bwipeout<cr>
   map <silent><buffer>d :call <sid>DeleteSelectedBuffer()<cr>
 endf
@@ -43,10 +45,25 @@ function! <sid>SelectedBuffer()
   return get(s:buflist, line('.')-1)
 endf
 
-function! <sid>EditSelectedBuffer()
+function!<sid>SelectAndClose()
   let l:bufnum = <sid>SelectedBuffer()
   bwipeout
+  return l:bufnum
+endf
+
+function! <sid>EditSelectedBuffer()
+  let l:bufnum = <sid>SelectAndClose()
   exe ':b'.get(l:bufnum,1)
+endf
+
+function! <sid>EditSelectedBufferInSplit()
+  let l:bufnum = <sid>SelectAndClose()
+  exe ':sb'.get(l:bufnum,1)
+endf
+
+function! <sid>EditSelectedBufferInVSplit()
+  let l:bufnum = <sid>SelectAndClose()
+  exe ':vertical sb'.get(l:bufnum,1)
 endf
 
 function! <sid>DeleteSelectedBuffer()
