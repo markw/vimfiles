@@ -85,7 +85,6 @@ function! <SID>MavenUnitTest(file)  "{{{1
     exe 'w'
   endif
   let savedir = getcwd()
-  let savemake = &makeprg
   let pom = findfile('pom.xml','.;')
   let pomdir = fnamemodify(pom,":p:h")
   let testname = fnamemodify(a:file,":r")
@@ -110,7 +109,6 @@ function! <SID>MavenUnitTest(file)  "{{{1
   make!
   "echo &makeprg
 
-  silent exe "setlocal makeprg=".savemake
   silent exe "lcd ".savedir
 
 endf

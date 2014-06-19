@@ -50,6 +50,7 @@ endf
 
 
 let NERDTreeHijackNetrw=1
+let NERDTreeWinSize=50
 let NERDTreeIgnore=['target','\.class$', '\~$']
 
 "todo: move somewhere else
@@ -85,3 +86,5 @@ color desert
 
 "nnoremap <F2> :VimpanelToggleLeft<cr>
 nnoremap <F2> :NERDTreeToggle<cr>
+
+cabbrev ntfb NERDTreeFromBookmark
