@@ -1,3 +1,4 @@
+" Prolog   {{{1
 if exists("g:loaded_file_templates")
   finish
 endif
@@ -7,7 +8,8 @@ let g:loaded_file_templates = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function s:PlaceCursor()
+
+function s:PlaceCursor() "{{{1
 	0 
 	if search("${^}", "W")
 		let l:column = col(".")
@@ -17,11 +19,11 @@ function s:PlaceCursor()
 	endif
 endfunction
 
-function! s:NormalizePath(path)
+function s:NormalizePath(path)  "{{{1
     return substitute(a:path,'\\','/','g')
 endf
  
-function! s:Start() "{{{1
+function s:Start() "{{{1
     if len(&ft) == 0
         return
     endif
@@ -34,6 +36,7 @@ function! s:Start() "{{{1
     endif
 
     let templateDir = s:NormalizePath(templateDir . '/' . &ft)
+
     if !isdirectory(templateDir)
         echoerr "Not found " . templateDir
         return
@@ -51,11 +54,11 @@ function! s:Start() "{{{1
     endif
 endf
 
-function s:Expand(variable, value)
+function s:Expand(variable, value)    "{{{1
 	silent! exe "%s/\${" . a:variable . "}/" .  a:value . "/g"
 endf
 
-function! s:LoadTemplate(template) "{{{1
+function s:LoadTemplate(template) "{{{1
     silent exe ':0r '. a:template
     let l:filename   = expand("%:t:r")
     let l:class      = substitute(l:filename, "\\([a-zA-Z]\\+\\)", "\\u\\1\\e", "g")
@@ -65,7 +68,7 @@ function! s:LoadTemplate(template) "{{{1
     call s:PlaceCursor()
 endf
 
-function! s:PickFromList(prompt, candidates) "{{{1
+function s:PickFromList(prompt, candidates) "{{{1
   let picklist = [a:prompt]
   let index = 1
   for c in a:candidates
@@ -77,10 +80,11 @@ function! s:PickFromList(prompt, candidates) "{{{1
   return (choice > 0 && choice <= len(a:candidates))  ? choice : 0
 endfunction
 
-
+" Epilog   {{{1
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
 command! Template call s:Start()
 au BufNewFile * call s:Start()
+
