@@ -9,10 +9,10 @@ set cpo&vim
 
 function s:PlaceCursor()
 	0 
-	if search("<<^>>", "W")
+	if search("${^}", "W")
 		let l:column = col(".")
 		let l:lineno = line(".")
-		s/<<^>>//
+		s/${^}//
 		call cursor(l:lineno, l:column)
 	endif
 endfunction
@@ -52,11 +52,11 @@ function! s:Start() "{{{1
 endf
 
 function s:Expand(variable, value)
-	silent! exe "%s/<<" . a:variable . ">>/" .  a:value . "/g"
+	silent! exe "%s/\${" . a:variable . "}/" .  a:value . "/g"
 endf
 
 function! s:LoadTemplate(template) "{{{1
-    exe ':0r '. a:template
+    silent exe ':0r '. a:template
     let l:filename   = expand("%:t:r")
     let l:class      = substitute(l:filename, "\\([a-zA-Z]\\+\\)", "\\u\\1\\e", "g")
 
@@ -69,7 +69,8 @@ function! s:PickFromList(prompt, candidates) "{{{1
   let picklist = [a:prompt]
   let index = 1
   for c in a:candidates
-      call add(picklist,index.'. '.c)
+      let l:candidate = fnamemodify(c,":p:t")
+      call add(picklist,index.'. '.l:candidate)
       let index += 1
   endfor
   let choice = inputlist(picklist)
