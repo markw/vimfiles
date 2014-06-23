@@ -11,14 +11,14 @@ function! s:ActivateBuffer(name) "{{{1
   return
 endfunction
 
-function! <SID>FindFileRecursive(file,dir,curr)
+function! s:FindFileRecursive(file,dir,curr) "{{{1
     let found = findfile(a:file,a:dir.';')
     if len(found)
-        return FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
+        return s:FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
     elseif len(a:curr)
         return a:curr
     else
-        throw "No project root"
+        "throw "No project root"
     endif
 endf
 
@@ -27,7 +27,7 @@ function! s:FindProjectRoot() "{{{1
 endf
 
 function! s:FindProjectRootFrom(dir) "{{{1
-  return fnamemodify(<SID>FindFileRecursive('pom.xml',a:dir,''),":p:h")
+  return fnamemodify(s:FindFileRecursive('pom.xml',a:dir,''),":p:h")
 endf
 
 function! <SID>PickFromList(candidates) "{{{1
@@ -176,4 +176,7 @@ nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 
 nmap <F9> :call <SID>MavenUnitTest(fnamemodify(expand("%"),":p"))<cr>
 
-au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
+"au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
+au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(s:FindProjectRoot(), ':p:h').'/*/src/**,./*'
+
+" vim: set fdm=marker:
