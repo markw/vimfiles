@@ -11,21 +11,24 @@ function! s:ActivateBuffer(name) "{{{1
   return
 endfunction
 
-function! s:FindProjectRoot() "{{{1
-
-  function! FindFileRecursive(file,dir,curr)
+function! <SID>FindFileRecursive(file,dir,curr)
     let found = findfile(a:file,a:dir.';')
     if len(found)
-      return FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
+        return FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
     elseif len(a:curr)
-      return a:curr
+        return a:curr
     else
-      throw "No project root"
+        throw "No project root"
     endif
-  endf
+endf
 
-  return fnamemodify(FindFileRecursive('pom.xml','.',''),":p:h")
-endfunction
+function! s:FindProjectRoot() "{{{1
+  return s:FindProjectRootFrom('.')
+endf
+
+function! s:FindProjectRootFrom(dir) "{{{1
+  return fnamemodify(<SID>FindFileRecursive('pom.xml',a:dir,''),":p:h")
+endf
 
 function! <SID>PickFromList(candidates) "{{{1
   let picklist = ['Select one:']
@@ -47,7 +50,7 @@ function! <SID>FindInIndexFile(s)  "{{{1
   let numMatches = len(filenames)
 
   if 0 == numMatches
-    echo "No matches."
+    echoerr "No matches."
     return
   endif
 
@@ -57,7 +60,7 @@ function! <SID>FindInIndexFile(s)  "{{{1
   endif
 
   if 100 < numMatches
-    echo "Too many matches: ".numMatches
+    echoerr "Too many matches: ".numMatches
     return
   endif
 
@@ -80,36 +83,70 @@ function! <SID>CreateVimIndexes()    "{{{1
   echo "Done."
 endf
 
-function! <SID>MavenUnitTest(file)  "{{{1
+function! <SID>RunMaven(cmd)  "{{{1
   if &modified == 1
     exe 'w'
   endif
   let savedir = getcwd()
-  let pom = findfile('pom.xml','.;')
+  let pom = findfile('pom.xml', savedir.';')
   let pomdir = fnamemodify(pom,":p:h")
+
+  exe "setlocal makeprg=".a:cmd
+  
+  setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
+
+  silent exe "lcd ".pomdir
+
+  make!
+  "echo &makeprg
+
+  silent exe "lcd ".savedir
+endf
+
+function! <SID>MavenQunitTestDir(path) "{{{1
+    let segments = split(a:path,'/')
+    let jsIndex = index(segments,'javascript')
+    let subpath = join(segments[jsIndex+1 :], '/')
+    let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.subpath
+    silent exe 'lcd '.a:path
+    call <SID>RunMaven(cmd)
+endf
+
+function! <SID>MavenQunitTestFile(path) "{{{1
+    let segments = split(a:path,'/')
+    let filedir = '/'.join(segments[:-2], '/')
+
+    if len(filedir) > 0
+        silent exe 'lcd '.filedir
+    endif
+
+    let fname = fnamemodify(segments[-1],":t:r")
+
+    if fname !~ '\.qunit$'
+        fname = fname . '.qunit'
+    endif
+
+    let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter=' . fname
+
+    call <SID>RunMaven(cmd)
+endf
+
+function! <SID>MavenUnitTest(file)  "{{{1
   let testname = fnamemodify(a:file,":r")
 
   if &ft == 'coffee' || &ft == 'javascript'
-    let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.testname
+    "let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.testname
+    "call <SID>RunMaven(cmd)
+    call <SID>MavenQunitTestFile(a:file)
   endif
 
   if &ft == 'java'
     if testname !~ 'Test$'
         let testname = testname.'Test'
     endif
-    let cmd = g:maven_exec.'\ -q\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+    let cmd = g:maven_exec.'\ -oq\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+    call <SID>RunMaven(cmd)
   endif
-
-  exe "setlocal makeprg=".cmd
-  
-  setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
-
-  exe "lcd ".pomdir
-
-  make!
-  "echo &makeprg
-
-  silent exe "lcd ".savedir
 
 endf
 
@@ -127,13 +164,16 @@ function! <SID>AutoComplete(A,L,P)   "{{{1
 endf
 
 "}}}1
-command! -nargs=0 Index call <SID>CreateVimIndexes()
+command! -nargs=1 MavenTest          call <SID>MavenUnitTest(<q-args>)
+command! -nargs=1 MavenQunitTest     call <SID>MavenQunitTest(<q-args>)
+command! -nargs=1 MavenQunitTestDir  call <SID>MavenQunitTestDir(<q-args>)
+command! -nargs=1 MavenQunitTestFile call <SID>MavenQunitTestFile(<q-args>)
+command! -nargs=0 Index              call <SID>CreateVimIndexes()
+command! -nargs=1 Grep               call <SID>GrepFromProjectRoot(<q-args>)
 command! -nargs=+ -complete=customlist,<SID>AutoComplete Find  call <SID>FindFilesInIndex(<q-args>)
-command! -nargs=1 Grep  call <SID>GrepFromProjectRoot(<q-args>)
 
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 
-nmap <F9> :call <SID>MavenUnitTest(expand("%"))<cr>
-imap <F9> <esc>w<cr>:call <SID>Maven(expand("%"))<cr>
+nmap <F9> :call <SID>MavenUnitTest(fnamemodify(expand("%"),":p"))<cr>
 
 au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'

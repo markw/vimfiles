@@ -49,10 +49,6 @@ endif
 endf
 
 
-let NERDTreeHijackNetrw=1
-let NERDTreeWinSize=50
-let NERDTreeIgnore=['target','\.class$', '\~$']
-
 "todo: move somewhere else
 autocmd BufNewFile *.xsl  :0r ~/.vim/templates/template.xsl
 autocmd BufNewFile *.html :0r ~/.vim/templates/template.html
@@ -74,17 +70,18 @@ au WinLeave * set nocursorline
 au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
 color desert
 
-"let g:VimpanelStorage='~/.vim/.vimpanel'
+"-------------------------------------------------------------
+"NERDTree customizations
+"-------------------------------------------------------------
 
-"cabbrev ss VimpanelSessionMake
-"cabbrev sl VimpanelSessionLoad
-"cabbrev vp Vimpanel
-"cabbrev vl VimpanelLoad
-"cabbrev vc VimpanelCreate
-"cabbrev ve VimpanelEdit
-"cabbrev vr VimpanelRemove
-
-"nnoremap <F2> :VimpanelToggleLeft<cr>
 nnoremap <F2> :NERDTreeToggle<cr>
 
 cabbrev ntfb NERDTreeFromBookmark
+cabbrev ntt NERDTreeToggle
+cabbrev nt NERDTree
+cabbrev bk Bookmark
+
+let NERDTreeHijackNetrw=1
+let NERDTreeWinSize=50
+let NERDTreeIgnore=['target','\.class$', '\~$']
+
