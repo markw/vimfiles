@@ -9,21 +9,81 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-function s:PlaceCursor() "{{{1
-	0 
-	if search("${^}", "W")
-		let l:column = col(".")
-		let l:lineno = line(".")
-		s/${^}//
-		call cursor(l:lineno, l:column)
-	endif
-endfunction
+function s:ClassName(s) "{{{1
+    let tokens = split(a:s,'\.')
+    return substitute(tokens[0], '\<.', '\u&', '')
+endf
+
+function s:Expand(variable, value)    "{{{1
+	silent! exe "%s/\${" . a:variable . "}/" .  escape(a:value,'/') . "/g"
+endf
+
+function s:ExpandFilePathAfter(filedir)  "{{{1
+    call cursor(1,1)
+    let [row,col] = searchpos('\${FILE_PATH_AFTER\:','W') 
+
+    if row == 0
+        return
+    endif
+
+    let colonCol = searchpos(':','nW', row)[1]
+    let braceCol = searchpos('}','nW', row)[1]
+    let tokenlen = braceCol - colonCol - 1
+    let after = strpart(getline("."), colonCol, tokenlen)
+
+    let segments = split(a:filedir, "/")
+    let afterIndex = index(segments, after)
+
+    if afterIndex >= 0
+        unlet segments[0:afterIndex]
+    endif
+
+    call s:Expand('FILE_PATH_AFTER:'.after, join(segments, '/'))
+
+    " recurse
+    call s:ExpandFilePathAfter(a:filedir)
+endf
+
+function s:LoadTemplate(template) "{{{1
+    silent exe ':0r '. a:template
+    let l:filename   = expand("%:t:r")
+    let l:filedir    = expand("%:p:h")
+    let l:class      = s:ClassName(l:filename)
+
+    call s:Expand('FILE_NAME',  l:filename)
+    call s:Expand('CLASS_NAME', l:class)
+    call s:ExpandFilePathAfter(l:filedir)
+
+    call s:PlaceCursor()
+endf
 
 function s:NormalizePath(path)  "{{{1
     return substitute(a:path,'\\','/','g')
 endf
  
-function s:Start() "{{{1
+function s:PickFromList(prompt, candidates) "{{{1
+  let picklist = [a:prompt]
+  let index = 1
+  for c in a:candidates
+      let l:candidate = fnamemodify(c,":p:t")
+      call add(picklist,index.'. '.l:candidate)
+      let index += 1
+  endfor
+  let choice = inputlist(picklist)
+  return (choice > 0 && choice <= len(a:candidates))  ? choice : 0
+endfunction
+
+function s:PlaceCursor() "{{{1
+	call cursor(1,1)
+	if search("${^}", "W")
+		let l:column = col(".")
+		let l:line   = line(".")
+		s/${^}//
+		call cursor(l:line, l:column)
+	endif
+endfunction
+
+function s:Main() "{{{1
     if len(&ft) == 0
         return
     endif
@@ -38,7 +98,6 @@ function s:Start() "{{{1
     let templateDir = s:NormalizePath(templateDir . '/' . &ft)
 
     if !isdirectory(templateDir)
-        echoerr "Not found " . templateDir
         return
     endif
 
@@ -54,37 +113,13 @@ function s:Start() "{{{1
     endif
 endf
 
-function s:Expand(variable, value)    "{{{1
-	silent! exe "%s/\${" . a:variable . "}/" .  a:value . "/g"
-endf
-
-function s:LoadTemplate(template) "{{{1
-    silent exe ':0r '. a:template
-    let l:filename   = expand("%:t:r")
-    let l:class      = substitute(l:filename, "\\([a-zA-Z]\\+\\)", "\\u\\1\\e", "g")
-
-    call s:Expand('FILE_NAME',  l:filename)
-    call s:Expand('CLASS_NAME', l:class)
-    call s:PlaceCursor()
-endf
-
-function s:PickFromList(prompt, candidates) "{{{1
-  let picklist = [a:prompt]
-  let index = 1
-  for c in a:candidates
-      let l:candidate = fnamemodify(c,":p:t")
-      call add(picklist,index.'. '.l:candidate)
-      let index += 1
-  endfor
-  let choice = inputlist(picklist)
-  return (choice > 0 && choice <= len(a:candidates))  ? choice : 0
-endfunction
 
 " Epilog   {{{1
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-command! Template call s:Start()
-au BufNewFile * call s:Start()
+command! Template call s:Main()
+au BufNewFile * call s:Main()
 
+" vim: set fdm=marker:
