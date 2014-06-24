@@ -120,6 +120,7 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 command! Template call s:Main()
-au BufNewFile * call s:Main()
+au BufNewFile  * call s:Main()
+au BufReadPost * if -1 == line2byte(line("$")) | call s:Main() | endif
 
 " vim: set fdm=marker:
