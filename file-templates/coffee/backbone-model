@@ -1,0 +1,14 @@
+define ['backbone', 'jquery', 'SESSION' ], (Backbone, $, session) ->
+    class ${CLASS_NAME} extends Backbone.Model
+
+        idAttribute: "id"
+
+        id: ->
+            session.contactId
+
+        url: ->
+            "/member/api/contact/#{session.contactId}/${CLASS_NAME}"
+
+        defaults: ->
+            prop1: "prop1"
+            prop2: true

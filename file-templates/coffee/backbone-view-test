@@ -1,0 +1,25 @@
+define [
+    'sinon-qunit'
+    'jquery'
+    'SESSION'
+    'cs!javascript/${FILE_PATH_AFTER:javascript}/${CLASS_NAME}'
+    'javascript/member-rest-specs'
+], (sinon, $, session, ${CLASS_NAME}, specUtil ) ->
+
+    view = null
+    submitStub = null
+    sinon.stubProperty session, "companyId", 123
+
+    module "${CLASS_NAME} tests",  {
+        setup: ->
+            submitStub = sinon.stub $.prototype, "ajaxSubmit"
+            view = new ${CLASS_NAME}
+
+        teardown: ->
+            submitStub.restore()
+
+    }
+
+    test "render", ->
+        view.render()
+        equal view.$("#some-id"), "some value"

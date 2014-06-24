@@ -1,0 +1,25 @@
+define [
+    'jquery'
+    'sinon-qunit'
+    'javascript/member-rest-specs'
+    'SESSION'
+    'cs!javascript/${FILE_PATH_AFTER:javascript}/${CLASS_NAME}'
+], ($, sinon, specUtil, session, ${CLASS_NAME})->
+    
+    getSpec = specUtil.getSpec("get a ${CLASS_NAME}")
+
+    sinon.stubProperty(session, "contactId", 1)
+
+    module('${CLASS_NAME} tests', {
+        setup: ->
+            sinon.stub($, "ajax")
+
+        teardown: ->
+            $.ajax.restore()
+    })
+
+    test "fetch model", ->
+        model = new ${CLASS_NAME}()
+        $.ajax.yieldsTo("success", {})
+        model.fetch()
+        equal(model.get("something"), "something")
