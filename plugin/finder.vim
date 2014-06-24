@@ -123,7 +123,7 @@ function! s:MavenQunitTestFile(path) "{{{1
     let fname = fnamemodify(segments[-1],":t:r")
 
     if fname !~ '\.qunit$'
-        fname = fname . '.qunit'
+        let fname = fname . '.qunit'
     endif
 
     let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter=' . fname
