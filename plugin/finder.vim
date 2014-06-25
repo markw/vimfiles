@@ -1,5 +1,5 @@
 if !exists('g:maven_exec')
-  let g:maven_exec= 'm3'
+  let g:maven_exec= 'mvn'
 endif
 
 function! s:ActivateBuffer(name) "{{{1
