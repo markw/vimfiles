@@ -5,6 +5,7 @@ function! ViewBufferList()
 
   if bufexists(bufnr("__buffer_list__"))
     exec ':' . bufnr("__buffer_list__") . 'bwipeout!'
+    wincmd p
     return
   endif
   call <sid>GenerateList()
@@ -54,16 +55,19 @@ endf
 
 function! <sid>EditSelectedBuffer()
   let l:bufnum = <sid>SelectAndClose()
+  wincmd p
   exe ':b'.get(l:bufnum,1)
 endf
 
 function! <sid>EditSelectedBufferInSplit()
   let l:bufnum = <sid>SelectAndClose()
+  wincmd p
   exe ':sb'.get(l:bufnum,1)
 endf
 
 function! <sid>EditSelectedBufferInVSplit()
   let l:bufnum = <sid>SelectAndClose()
+  wincmd p
   exe ':vertical sb'.get(l:bufnum,1)
 endf
 
