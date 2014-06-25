@@ -77,9 +77,10 @@ function! s:FindFilesInIndex(files)  "{{{1
 endf
 
 function! s:CreateVimIndexes()    "{{{1
-  let root = s:FindProjectRoot()
+  let root = fnamemodify(s:FindProjectRoot(),":p:h")
+  let srcdirs = finddir('src',root.'/**5',-1)
   echo "Building index file: ".root.'/.vimindex'
-  call system('find '.root.'/*/src  -type f -fprint '.root. '/.vimindex 2> /dev/null')
+  call system('find '.join(srcdirs,' ').' -type f -fprint '.root. '/.vimindex 2> /dev/null')
   echo "Done."
 endf
 
@@ -157,6 +158,12 @@ function! s:GrepFromProjectRoot(s) "{{{1
   exe ':grep '.a:s.' '.srcdirs
 endf
 
+function! s:ProjectPath()  "{{{1
+  let root = fnamemodify(s:FindProjectRoot(),":p:h")
+  let srcdirs = finddir('src',root.'/**5',-1)
+  return join(map(srcdirs, "v:val .'/**'"),',')
+endf
+
 function! s:AutoComplete(A,L,P)   "{{{1
   let filenames = []
   for f in s:GrepIndexFile(a:A)
@@ -180,7 +187,6 @@ nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 nmap <F9> :call <SID>MavenUnitTest(fnamemodify(expand("%"),":p"))<cr>
 " 1}}}
 
-"au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(findfile('pom.xml','.;'), ':p:h').'/src/**,./**'
-au BufEnter,VimEnter * exe 'setlocal path='.fnamemodify(s:FindProjectRoot(), ':p:h').'/*/src/**,./*'
+au BufEnter,VimEnter * exe 'setlocal path='.s:ProjectPath()
 
 " vim: set fdm=marker:
