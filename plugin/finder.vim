@@ -94,11 +94,11 @@ function! s:RunMaven(cmd)  "{{{1
 
   exe "setlocal makeprg=".a:cmd
   
-  setlocal errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
+  setlocal errorformat=[ERROR]\ %f:[%l\\,%c]%m
 
   silent exe "lcd ".pomdir
 
-  make!
+  make
   "echo &makeprg
 
   silent exe "lcd ".savedir
@@ -174,6 +174,7 @@ endf
 
 "}}}1
 " Commands   {{{1
+command! -nargs=0 Make               call s:RunMaven(g:maven_exec.'\ clean\ install')
 command! -nargs=1 MavenTest          call s:MavenUnitTest(<q-args>)
 command! -nargs=1 MavenQunitTest     call s:MavenQunitTest(<q-args>)
 command! -nargs=1 MavenQunitTestDir  call s:MavenQunitTestDir(<q-args>)
