@@ -152,7 +152,9 @@ endf
 
 function! s:GrepFromProjectRoot(s) "{{{1
   setlocal grepprg=grep\ -n\ -R
-  exe ':grep '.a:s.' '.s:FindProjectRoot().'/*/src'
+  let root = s:FindProjectRoot()
+  let srcdirs = join(finddir('src',root.'/**5',-1),' ')
+  exe ':grep '.a:s.' '.srcdirs
 endf
 
 function! s:AutoComplete(A,L,P)   "{{{1
