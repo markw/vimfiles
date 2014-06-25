@@ -26,7 +26,7 @@ function! <sid>GenerateList()
     let i = i+1
   endwhile
   call sort(s:buflist)
-  silent! exe ':silent! :vertical :topleft :' . (width+2) .'split __buffer_list__'
+  silent! exe ':silent! :vertical :botright :' . (width+2) .'split __buffer_list__'
   let cursor_line=1
   for [bufname,bufnum] in s:buflist  
     if cur_buf == bufnum | let cursor_line = line('$') | endif
