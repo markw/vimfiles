@@ -78,7 +78,7 @@ endf
 
 function! s:CreateVimIndexes()    "{{{1
   let root = fnamemodify(s:FindProjectRoot(),":p:h")
-  let srcdirs = finddir('src',root.'/**5',-1)
+  let srcdirs = map(finddir('src',root.'/**5',-1),"fnamemodify(v:val,':p')")
   echo "Building index file: ".root.'/.vimindex'
   call system('find '.join(srcdirs,' ').' -type f -fprint '.root. '/.vimindex 2> /dev/null')
   echo "Done."
@@ -98,7 +98,7 @@ function! s:RunMaven(cmd)  "{{{1
 
   silent exe "lcd ".pomdir
 
-  make
+  make!
   "echo &makeprg
 
   silent exe "lcd ".savedir
@@ -182,6 +182,7 @@ command! -nargs=1 MavenQunitTestFile call s:MavenQunitTestFile(<q-args>)
 command! -nargs=0 Index              call s:CreateVimIndexes()
 command! -nargs=1 Grep               call s:GrepFromProjectRoot(<q-args>)
 command! -nargs=+ -complete=customlist,s:AutoComplete Find  call s:FindFilesInIndex(<q-args>)
+
 
 " Mappings  {{{1
 nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
