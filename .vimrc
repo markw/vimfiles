@@ -70,6 +70,9 @@ au WinLeave * set nocursorline
 au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
 color desert
 
+"nmap <silent><F3> :call ViewBufferList()<cr>
+nmap <silent><F3> :Buffers<cr>
+
 "-------------------------------------------------------------
 "NERDTree customizations
 "-------------------------------------------------------------
