@@ -13,7 +13,7 @@ endfunction
 
 function! s:FindFileRecursive(file,dir,curr) "{{{1
     let found = findfile(a:file,a:dir.';')
-    if len(found)
+    if len(found) > 0
         return s:FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
     elseif len(a:curr)
         return a:curr
@@ -23,7 +23,11 @@ function! s:FindFileRecursive(file,dir,curr) "{{{1
 endf
 
 function! s:FindProjectRoot() "{{{1
-  return s:FindProjectRootFrom('.')
+    let found = findfile('pom.xml','.;')
+    if len(found) > 0
+        return s:FindFileRecursive('pom.xml',fnamemodify(found,":p:h:h"),found)
+    endif
+    return ''
 endf
 
 function! s:FindProjectRootFrom(dir) "{{{1
@@ -159,9 +163,13 @@ function! s:GrepFromProjectRoot(s) "{{{1
 endf
 
 function! s:ProjectPath()  "{{{1
-  let root = fnamemodify(s:FindProjectRoot(),":p:h")
-  let srcdirs = finddir('src',root.'/**5',-1)
-  return join(map(srcdirs, "v:val .'/**'"),',')
+    let root =  s:FindProjectRoot()
+    if len(root) == 0
+        return './*'
+    endif
+    let root = fnamemodify(root,":p:h")
+    let srcdirs = finddir('src',root.'/**3',-1)
+    return join(map(srcdirs, "v:val .'/**'"),',')
 endf
 
 function! s:AutoComplete(A,L,P)   "{{{1
