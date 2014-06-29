@@ -1,5 +1,7 @@
 
-map <silent><F3> :call ViewBufferList()<cr>
+function! s:Error(msg)
+    echohl ErrorMsg | echo a:msg | echohl None
+endf
 
 function! ViewBufferList()
 
@@ -8,6 +10,16 @@ function! ViewBufferList()
     wincmd p
     return
   endif
+
+  if &ft == 'help'
+      return
+  endif
+
+  if bufname('') =~ 'NERD_tree'
+      call s:Error("Can't use from NERDTree")
+      return
+  endif
+
   call <sid>GenerateList()
 endf
 
@@ -25,6 +37,10 @@ function! <sid>GenerateList()
     endif
     let i = i+1
   endwhile
+  if len(s:buflist) < 2
+      call s:Error("Not enough buffers")
+      return
+  endif
   call sort(s:buflist)
   silent! exe ':silent! :vertical :botright :' . (width+2) .'split __buffer_list__'
   let cursor_line=1
@@ -50,24 +66,22 @@ endf
 function!<sid>SelectAndClose()
   let l:bufnum = <sid>SelectedBuffer()
   bwipeout
+  wincmd p
   return l:bufnum
 endf
 
 function! <sid>EditSelectedBuffer()
   let l:bufnum = <sid>SelectAndClose()
-  wincmd p
   exe ':b'.get(l:bufnum,1)
 endf
 
 function! <sid>EditSelectedBufferInSplit()
   let l:bufnum = <sid>SelectAndClose()
-  wincmd p
   exe ':sb'.get(l:bufnum,1)
 endf
 
 function! <sid>EditSelectedBufferInVSplit()
   let l:bufnum = <sid>SelectAndClose()
-  wincmd p
   exe ':vertical sb'.get(l:bufnum,1)
 endf
 
