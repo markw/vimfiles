@@ -22,12 +22,14 @@ function! s:FindFileRecursive(file,dir,curr) "{{{1
     endif
 endf
 
+function! s:FindModuleRoot() "{{{1
+    let found = findfile('pom.xml','.;')
+    return len(found) == 0 ? '' : fnamemodify(found,":p:h")
+endf
+
 function! s:FindProjectRoot() "{{{1
     let found = findfile('pom.xml','.;')
-    if len(found) > 0
-        return s:FindFileRecursive('pom.xml',fnamemodify(found,":p:h:h"),found)
-    endif
-    return ''
+    return len(found) == 0 ? '' : s:FindFileRecursive('pom.xml',fnamemodify(found,":p:h:h"),found)
 endf
 
 function! s:FindProjectRootFrom(dir) "{{{1
@@ -46,7 +48,8 @@ endfunction
 
 function! s:GrepIndexFile(s)            "{{{1
   let pattern = substitute(a:s,'\([A-Z]\)','[a-z1-9]*\1[a-z1-9]*', 'g').'.*'
-  return split(system("grep '".pattern."' ". s:FindProjectRoot() ."/.vimindex"))
+  let root = fnamemodify(s:FindProjectRoot(),":p:h")
+  return split(system("grep '".pattern."' ". root ."/.vimindex"))
 endf
 
 function! s:FindInIndexFile(s)  "{{{1
@@ -137,7 +140,7 @@ function! s:MavenQunitTestFile(path) "{{{1
 endf
 
 function! s:MavenUnitTest(file)  "{{{1
-  let testname = fnamemodify(a:file,":r")
+  let testname = fnamemodify(a:file,":t:r")
 
   if &ft == 'coffee' || &ft == 'javascript'
     "let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.testname
@@ -149,7 +152,7 @@ function! s:MavenUnitTest(file)  "{{{1
     if testname !~ 'Test$'
         let testname = testname.'Test'
     endif
-    let cmd = g:maven_exec.'\ -oq\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
+    let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ test\ -Dtest='.testname
     call s:RunMaven(cmd)
   endif
 
@@ -158,6 +161,10 @@ endf
 function! s:GrepFromProjectRoot(s) "{{{1
   setlocal grepprg=grep\ -n\ -R
   let root = s:FindProjectRoot()
+  if len(root) == 0
+      return
+  endif
+  let root = fnamemodify(root,":p:h")
   let srcdirs = join(finddir('src',root.'/**5',-1),' ')
   exe ':grep '.a:s.' '.srcdirs
 endf
@@ -197,6 +204,6 @@ nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 nmap <F9> :call <SID>MavenUnitTest(fnamemodify(expand("%"),":p"))<cr>
 " 1}}}
 
-au BufEnter,VimEnter * exe 'setlocal path='.s:ProjectPath()
+au BufEnter,VimEnter * exe 'setlocal path='.s:FindModuleRoot()
 
 " vim: set fdm=marker:

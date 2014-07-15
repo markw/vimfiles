@@ -7,15 +7,15 @@ function! s:BufferInputList()
   let width=10
   while i <= maxbuf
     if buflisted(i)
-        let buf_char = '   '
+        let buf_char = ' '
         if  cur_bufnr == i
-            let buf_char = ' % '
+            let buf_char = '%'
         elseif alt_bufnr == i
-            let buf_char = ' # '
+            let buf_char = '#'
         endif
       let bufname = fnamemodify(bufname(i),':t')
       let bufdir = fnamemodify(bufname(i),':p:h')
-      call add(s:buflist, i .buf_char.bufname)
+      call add(s:buflist, printf("%3s %s %-30s %s", i, buf_char, bufname, bufdir))
       let width = max([width, len(bufname)])
     endif
     let i = i+1
@@ -26,4 +26,4 @@ function! s:BufferInputList()
   endif
 endf
 
-command Buffers :call <sid>BufferInputList()
+command! Buffers :call <sid>BufferInputList()
