@@ -101,11 +101,11 @@ function! s:RunMaven(cmd)  "{{{1
 
   exe "setlocal makeprg=".a:cmd
   
-  setlocal errorformat=[ERROR]\ %f:[%l\\,%c]%m
+  setlocal errorformat=[ERROR]\ %f:[%l\\,%c]%m,%E%n.\ ERROR\ in\ %f\ (at\ line\ %l),%-C\\\\t%.%#,%Z%m
 
   silent exe "lcd ".pomdir
 
-  make!
+  make
   "echo &makeprg
 
   silent exe "lcd ".savedir
@@ -140,7 +140,9 @@ function! s:MavenQunitTestFile(path) "{{{1
 endf
 
 function! s:MavenUnitTest(file)  "{{{1
-  let testname = fnamemodify(a:file,":t:r")
+  let file = (a:file == "%" ? expand("%") : a:file)
+  let testname = fnamemodify(file,":t:r")
+  echom testname
 
   if &ft == 'coffee' || &ft == 'javascript'
     "let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ qunit:test\ -Dqunit.filter='.testname
@@ -148,8 +150,8 @@ function! s:MavenUnitTest(file)  "{{{1
     call s:MavenQunitTestFile(a:file)
   endif
 
-  if &ft == 'java'
-    if testname !~ 'Test$'
+  if &ft == 'java' || &ft == 'groovy'
+    if testname !~ 'Test$' && testname !~ 'Integration'
         let testname = testname.'Test'
     endif
     let cmd = g:maven_exec.'\ -o\ -Dsurefire.useFile=false\ test\ -Dtest='.testname

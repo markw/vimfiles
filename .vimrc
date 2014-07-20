@@ -15,6 +15,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'derekwyatt/vim-scala'
+Plugin 'sukima/xmledit'
 "Plugin 'mihaifm/vimpanel'
 call vundle#end()
 
@@ -84,9 +85,11 @@ nnoremap <F2> :NERDTreeToggle<cr>
 cabbrev ntfb NERDTreeFromBookmark
 cabbrev ntt NERDTreeToggle
 cabbrev nt NERDTree
+cabbrev mt MavenTest %
 cabbrev bk Bookmark
 
 let NERDTreeHijackNetrw=1
 let NERDTreeWinSize=50
 let NERDTreeIgnore=['target','\.class$', '\~$']
 
+set t_Co=16
