@@ -101,7 +101,7 @@ function! s:RunMaven(cmd)  "{{{1
 
   exe "setlocal makeprg=".a:cmd
   
-  setlocal errorformat=[ERROR]\ %f:[%l\\,%c]%m,%E%n.\ ERROR\ in\ %f\ (at\ line\ %l),%-C\\\\t%.%#,%Z%m
+  setlocal errorformat=[ERROR]\ %f:[%l\\,%c]%m,%E%n.\ ERROR\ in\ %f\ (at\ line\ %l),%-C,%-C\\\\t%.%#,%Z%m
 
   silent exe "lcd ".pomdir
 
