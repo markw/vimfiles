@@ -61,7 +61,7 @@ autocmd BufNewFile build.properties  :0r ~/.vim/templates/build.properties
 autocmd BufNewFile *.groovy  :0r ~/.vim/templates/template.groovy
 
 autocmd BufLeave *.xsl aunmenu Xsl
-au BufReadCmd *.jar,*.xpi call zip#Browse(expand("<amatch>"))
+au BufReadCmd *.jar call zip#Browse(expand("<amatch>"))
 
 hi comment cterm=bold
 
