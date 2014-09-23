@@ -1,0 +1,20 @@
+package ???
+
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{FlatSpec, Matchers}
+
+
+@RunWith(classOf[JUnitRunner])
+class SomethingTest extends FlatSpec with Matchers {
+
+    "Something" should "do something useful" in {
+
+        // given
+
+        // when
+
+        // then
+    }
+}
+
