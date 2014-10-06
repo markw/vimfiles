@@ -171,6 +171,18 @@ function! s:GrepFromProjectRoot(s) "{{{1
   exe ':grep '.a:s.' '.srcdirs
 endf
 
+function! s:GrepFromModuleRoot(s) "{{{1
+  setlocal grepprg=grep\ -n\ -R
+  let root = &path
+  if len(root) == 0
+      return
+  endif
+  let root = fnamemodify(root,":p:h")
+  let srcdirs = join(finddir('src',root.'/**5',-1),' ')
+  silent exe ':grep '.a:s.' '.srcdirs
+  redraw!
+endf
+
 function! s:ProjectPath()  "{{{1
     let root =  s:FindProjectRoot()
     if len(root) == 0
@@ -197,7 +209,7 @@ command! -nargs=1 MavenQunitTest     call s:MavenQunitTest(<q-args>)
 command! -nargs=1 MavenQunitTestDir  call s:MavenQunitTestDir(<q-args>)
 command! -nargs=1 MavenQunitTestFile call s:MavenQunitTestFile(<q-args>)
 command! -nargs=0 Index              call s:CreateVimIndexes()
-command! -nargs=1 Grep               call s:GrepFromProjectRoot(<q-args>)
+command! -nargs=1 Grep               call s:GrepFromModuleRoot(<q-args>)
 command! -nargs=+ -complete=customlist,s:AutoComplete Find  call s:FindFilesInIndex(<q-args>)
 
 
