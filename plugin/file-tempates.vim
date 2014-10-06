@@ -103,9 +103,7 @@ function s:Main() "{{{1
 
     let templates = split(s:NormalizePath(glob(templateDir . '/*')),'\n')
 
-    if len(templates) == 1
-        call s:LoadTemplate(templates[0])
-    else 
+    if len(templates) > 0
         let index = s:PickFromList('Pick a template:', templates)
         if index > 0
             call s:LoadTemplate(templates[index-1])
