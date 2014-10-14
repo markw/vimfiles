@@ -11,29 +11,46 @@ function! s:ActivateBuffer(name) "{{{1
   return
 endfunction
 
-function! s:FindFileRecursive(file,dir,curr) "{{{1
-    let found = findfile(a:file,a:dir.';')
-    if len(found) > 0
-        return s:FindFileRecursive(a:file,fnamemodify(found,":p:h:h"),found)
-    elseif len(a:curr)
-        return a:curr
-    else
-        "throw "No project root"
-    endif
+
+function! s:FindFile(dir,...)  "{{{1
+
+    function! FindFile0(dir,files)
+        for f in a:files
+            if filereadable(a:dir.'/'.f)
+                return a:dir
+            endif
+        endfor
+        return a:dir == '/' ? '' : FindFile0(fnamemodify(a:dir,":h"), a:files)
+    endf
+    
+    return FindFile0(a:dir, a:000)
 endf
 
 function! s:FindModuleRoot() "{{{1
-    let found = findfile('pom.xml','.;')
-    return len(found) == 0 ? '' : fnamemodify(found,":p:h")
+    return s:FindFile(getcwd(),"pom.xml", "build.sbt")
 endf
+
 
 function! s:FindProjectRoot() "{{{1
-    let found = findfile('pom.xml','.;')
-    return len(found) == 0 ? '' : s:FindFileRecursive('pom.xml',fnamemodify(found,":p:h:h"),found)
-endf
 
-function! s:FindProjectRootFrom(dir) "{{{1
-  return fnamemodify(s:FindFileRecursive('pom.xml',a:dir,''),":p:h")
+    function! FindProjectRoot0(dir, lastFound)
+        "echo a:dir. ' ' . a:lastFound
+        let found =  s:FindModuleRoot()
+        if len(found) > 0
+            let parent = fnamemodify(found,":p:h:h")
+            silent exe "lcd ". parent
+            return FindProjectRoot0(parent, found)
+        elseif len(a:lastFound)
+            return a:lastFound
+        else
+            throw "No project root"
+        endif
+    endf
+
+    let curdir = getcwd()
+    let result = FindProjectRoot0(curdir,'')
+    silent exe "lcd ". curdir
+    return result
 endf
 
 function! s:PickFromList(candidates) "{{{1
