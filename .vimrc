@@ -1,5 +1,6 @@
 set nocompatible
 
+
 set rtp+=~/.vim/bundle/vundle/
 filetype off
 
@@ -16,7 +17,13 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'sukima/xmledit'
+Plugin 'guns/vim-clojure-static'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'scrooloose/syntastic'
+Plugin 'regedarek/ZoomWin'
+"Plugin 'wookiehangover/jshint.vim'
 "Plugin 'mihaifm/vimpanel'
+
 call vundle#end()
 
 filetype plugin indent on
@@ -34,6 +41,7 @@ set novisualbell noerrorbells
 set vb t_vb=
 set hidden
 set showcmd
+set updatetime=1000
 
 nnoremap <c-tab> :bnext<cr>
 nnoremap <s-c-tab> :bprev<cr>
@@ -92,4 +100,18 @@ let NERDTreeHijackNetrw=1
 let NERDTreeWinSize=50
 let NERDTreeIgnore=['target','\.class$', '\~$']
 
-set t_Co=16
+imap jj <esc>
+
+" syntastic settings
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+let g:syntastic_javascript_checkers = ['jsxhint']
+let g:syntastic_java_checkers=['']

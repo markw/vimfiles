@@ -11,6 +11,21 @@ function! s:ActivateBuffer(name) "{{{1
   return
 endfunction
 
+function! s:AutoComplete(A,L,P)   "{{{1
+  let filenames = []
+  for f in s:GrepIndexFile(a:A)
+      call add(filenames,fnamemodify(f,":t"))
+  endfor
+  return filenames
+endf
+
+function! s:CreateVimIndexes()    "{{{1
+  let root = fnamemodify(s:FindProjectRoot(),":p:h")
+  let srcdirs = map(finddir('src',root.'/**5',-1),"fnamemodify(v:val,':p')")
+  echo "Building index file: ".root.'/.vimindex'
+  call system('find '.join(srcdirs,' ').' -type f -fprint '.root. '/.vimindex 2> /dev/null')
+  echo "Done."
+endf
 
 function! s:FindFile(dir,...)  "{{{1
 
@@ -26,8 +41,8 @@ function! s:FindFile(dir,...)  "{{{1
     return FindFile0(a:dir, a:000)
 endf
 
-function! s:FindModuleRoot() "{{{1
-    return s:FindFile(getcwd(),"pom.xml", "build.sbt")
+function! s:FindModuleRoot(dir) "{{{1
+    return s:FindFile(a:dir,"pom.xml", "build.sbt")
 endf
 
 
@@ -35,7 +50,7 @@ function! s:FindProjectRoot() "{{{1
 
     function! FindProjectRoot0(dir, lastFound)
         "echo a:dir. ' ' . a:lastFound
-        let found =  s:FindModuleRoot()
+        let found =  s:FindModuleRoot(a:dir)
         if len(found) > 0
             let parent = fnamemodify(found,":p:h:h")
             silent exe "lcd ". parent
@@ -52,16 +67,6 @@ function! s:FindProjectRoot() "{{{1
     silent exe "lcd ". curdir
     return result
 endf
-
-function! s:PickFromList(candidates) "{{{1
-  let picklist = ['Select one:']
-  let index = 1
-  for c in a:candidates
-      call add(picklist,index.'. '.c)
-      let index += 1
-  endfor
-  return inputlist(picklist)
-endfunction
 
 function! s:GrepIndexFile(s)            "{{{1
   let pattern = substitute(a:s,'\([A-Z]\)','[a-z1-9]*\1[a-z1-9]*', 'g').'.*'
@@ -100,14 +105,6 @@ function! s:FindFilesInIndex(files)  "{{{1
   endfor
 endf
 
-function! s:CreateVimIndexes()    "{{{1
-  let root = fnamemodify(s:FindProjectRoot(),":p:h")
-  let srcdirs = map(finddir('src',root.'/**5',-1),"fnamemodify(v:val,':p')")
-  echo "Building index file: ".root.'/.vimindex'
-  call system('find '.join(srcdirs,' ').' -type f -fprint '.root. '/.vimindex 2> /dev/null')
-  echo "Done."
-endf
-
 function! s:RunMaven(cmd)  "{{{1
   if &modified == 1
     exe 'w'
@@ -120,12 +117,16 @@ function! s:RunMaven(cmd)  "{{{1
   
   setlocal errorformat=[ERROR]\ %f:[%l\\,%c]%m,%E%n.\ ERROR\ in\ %f\ (at\ line\ %l),%-C,%-C\\\\t%.%#,%Z%m
 
-  silent exe "lcd ".pomdir
-
-  make
-  "echo &makeprg
-
-  silent exe "lcd ".savedir
+  exe "silent lcd ".pomdir
+  make! 
+  exe "silent lcd ".savedir
+  let is_failure = 0
+  for line in getqflist()
+      if stridx(line['text'], 'BUILD FAILURE') > -1
+          let is_failure = 1
+      endif
+  endfor
+  if is_failure | :cc | else | exe "normal \<cr>" | endif
 endf
 
 function! s:MavenQunitTestDir(path) "{{{1
@@ -177,6 +178,16 @@ function! s:MavenUnitTest(file)  "{{{1
 
 endf
 
+function! s:PickFromList(candidates) "{{{1
+  let picklist = ['Select one:']
+  let index = 1
+  for c in a:candidates
+      call add(picklist,index.'. '.c)
+      let index += 1
+  endfor
+  return inputlist(picklist)
+endfunction
+
 function! s:GrepFromProjectRoot(s) "{{{1
   setlocal grepprg=grep\ -n\ -R
   let root = s:FindProjectRoot()
@@ -210,24 +221,30 @@ function! s:ProjectPath()  "{{{1
     return join(map(srcdirs, "v:val .'/**'"),',')
 endf
 
-function! s:AutoComplete(A,L,P)   "{{{1
-  let filenames = []
-  for f in s:GrepIndexFile(a:A)
-      call add(filenames,fnamemodify(f,":t"))
-  endfor
-  return filenames
+function! s:QuickFixZenOutput() "{{{1
+    if &ft == 'help'
+        return
+    endif
+    setlocal errorformat=%f:[%l\\,%c]%m,%f:%l\ col\ %c:\ %m,[ERROR]\ %f:%l\ col\ %c:\ %m,[ERROR]\ %f:[%l\\,%c]%m,%E%n.\ ERROR\ in\ %f\ (at\ line\ %l),%-C,%-C\\\\t%.%#,%Z%m
+    let file = '/tmp/zen.out'
+    if filereadable(file)
+        exe 'cfile '.file
+    endif
 endf
 
-"}}}1
+"
 " Commands   {{{1
-command! -nargs=0 Make               call s:RunMaven(g:maven_exec.'\ clean\ install')
-command! -nargs=1 MavenTest          call s:MavenUnitTest(<q-args>)
-command! -nargs=1 MavenQunitTest     call s:MavenQunitTest(<q-args>)
-command! -nargs=1 MavenQunitTestDir  call s:MavenQunitTestDir(<q-args>)
-command! -nargs=1 MavenQunitTestFile call s:MavenQunitTestFile(<q-args>)
-command! -nargs=0 Index              call s:CreateVimIndexes()
-command! -nargs=1 Grep               call s:GrepFromModuleRoot(<q-args>)
-command! -nargs=+ -complete=customlist,s:AutoComplete Find  call s:FindFilesInIndex(<q-args>)
+command! -nargs=0                                      Make               call s:RunMaven(g:maven_exec.'\ clean\ install')
+command! -nargs=1                                      Run                call s:RunMaven(g:maven_exec.'\ test-compile\ exec:java\ -Dexec.mainClass='.<q-args>)
+command! -nargs=1                                      MavenTest          call s:MavenUnitTest(<q-args>)
+command! -nargs=1                                      MavenQunitTest     call s:MavenQunitTest(<q-args>)
+command! -nargs=1                                      MavenQunitTestDir  call s:MavenQunitTestDir(<q-args>)
+command! -nargs=1                                      MavenQunitTestFile call s:MavenQunitTestFile(<q-args>)
+command! -nargs=0                                      Index              call s:CreateVimIndexes()
+command! -nargs=1                                      Grep               call s:GrepFromModuleRoot(<q-args>)
+command! -nargs=0                                      Zen                call s:QuickFixZenOutput()
+command! -nargs=0                                      CC                 call s:QuickFixZenOutput()
+command! -nargs=+ -complete=customlist,s:AutoComplete  Find               call s:FindFilesInIndex(<q-args>)
 
 
 " Mappings  {{{1
@@ -235,6 +252,6 @@ nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 nmap <F9> :call <SID>MavenUnitTest(fnamemodify(expand("%"),":p"))<cr>
 " 1}}}
 
-au BufEnter,VimEnter * exe 'setlocal path='.s:FindModuleRoot()
+au BufEnter,VimEnter * exe 'setlocal path='.s:FindModuleRoot(fnamemodify(expand('%'),":p:h")).'/**/'
 
 " vim: set fdm=marker:
