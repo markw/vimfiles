@@ -1,6 +1,5 @@
 set nocompatible
 
-
 set rtp+=~/.vim/bundle/vundle/
 filetype off
 
@@ -21,8 +20,8 @@ Plugin 'guns/vim-clojure-static'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/syntastic'
 Plugin 'regedarek/ZoomWin'
-"Plugin 'wookiehangover/jshint.vim'
-"Plugin 'mihaifm/vimpanel'
+Plugin 'amiorin/vim-project'
+Plugin 'kien/ctrlp.vim'
 
 call vundle#end()
 
@@ -34,7 +33,9 @@ set ruler nowrap nobackup
 set copyindent autoindent smartindent
 set tabstop=4 shiftwidth=4 shiftround
 set nostartofline
-set autochdir
+set wildignore=*.class,*.jar
+
+"set autochdir
 set number
 set directory=~/tmp,/tmp
 set novisualbell noerrorbells 
@@ -73,6 +74,7 @@ au BufReadCmd *.jar call zip#Browse(expand("<amatch>"))
 
 hi comment cterm=bold
 
+au BufEnter * exe 'set title titlestring='.expand("%:t")
 au BufEnter * set cursorline
 au BufLeave * set nocursorline
 au WinEnter * set cursorline
@@ -110,8 +112,18 @@ set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 
 let g:syntastic_javascript_checkers = ['jsxhint']
 let g:syntastic_java_checkers=['']
+
+" Projects
+let g:project_use_nerdtree = 1
+set rtp+=~/.vim/bundle/vim-project/
+
+call project#rc("~/git")
+Project '~/git/main/cjo/member-web/', 'member-web'
+Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'
+Project '~/git/jaws', 'jaws'
+Project '~/git/jaws-configuration', 'jaws-configuration'

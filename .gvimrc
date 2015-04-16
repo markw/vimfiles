@@ -11,7 +11,7 @@ set lines=60 columns=160
 "set guifont=DejaVu\ Sans\ Mono\ 10
 "set guifont=Inconsolata\ Medium\ 12
 "set guifont=Ubuntu\ Mono\ 12
-set guifont=Source\ Code\ Pro\ 11,Ubuntu\ Mono\ 12,Droid\ Sans\ Mono\ Slashed\ 11
+set guifont=Droid\ Sans\ Mono\ Slashed\ 11,Source\ Code\ Pro\ 10,Ubuntu\ Mono\ 11,
 
 "
 set clipboard=unnamed

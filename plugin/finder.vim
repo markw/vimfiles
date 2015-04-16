@@ -35,7 +35,7 @@ function! s:FindFile(dir,...)  "{{{1
                 return a:dir
             endif
         endfor
-        return a:dir == '/' ? '' : FindFile0(fnamemodify(a:dir,":h"), a:files)
+        return (a:dir == '/' || a:dir =~ 'zipfile:') ? '' : FindFile0(fnamemodify(a:dir,":h"), a:files)
     endf
     
     return FindFile0(a:dir, a:000)
@@ -232,7 +232,13 @@ function! s:QuickFixZenOutput() "{{{1
     endif
 endf
 
-"
+function! s:SetPath() "{{{1
+    let root = s:FindModuleRoot(fnamemodify(expand('%'),":p:h"))
+    if len(root) > 0
+        exe 'setlocal path='.root.'/src/**/'
+    endif
+endf
+
 " Commands   {{{1
 command! -nargs=0                                      Make               call s:RunMaven(g:maven_exec.'\ clean\ install')
 command! -nargs=1                                      Run                call s:RunMaven(g:maven_exec.'\ test-compile\ exec:java\ -Dexec.mainClass='.<q-args>)
@@ -252,6 +258,6 @@ nmap <F4> :call <SID>FindInIndexFile(expand('<cword>'))<cr>
 nmap <F9> :call <SID>MavenUnitTest(fnamemodify(expand("%"),":p"))<cr>
 " 1}}}
 
-au BufEnter,VimEnter * exe 'setlocal path='.s:FindModuleRoot(fnamemodify(expand('%'),":p:h")).'/**/'
+au BufEnter,VimEnter * call s:SetPath()
 
 " vim: set fdm=marker:
