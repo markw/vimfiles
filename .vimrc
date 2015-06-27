@@ -127,3 +127,50 @@ Project '~/git/main/cjo/member-web/', 'member-web'
 Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'
 Project '~/git/jaws', 'jaws'
 Project '~/git/jaws-configuration', 'jaws-configuration'
+
+function! s:CompareTwoLines()
+    let thisLine = getline(".")
+    let nextLine = getline(line(".")+1)
+    let thisLen  = strlen(thisLine)
+    let nextLen  = strlen(nextLine)
+    let numChars = min([thisLen, nextLen]) - 1
+    let index = col(".")
+    while index < numChars
+        if strpart(thisLine, index, 1) != strpart(nextLine, index, 1)
+            exe 'normal '. index . '|l'
+            return
+        endif
+        let index = index + 1
+    endwhile
+    if thisLen != nextLen
+        exe 'normal '. index . '|l'
+        return
+    endif
+    echo "No differences found"
+endf
+
+command! CompareLines call s:CompareTwoLines()
+
+function! AlignEquals()
+    let first = line("'<")
+    let last =  line("'>")
+    let index = first
+    let eqPos = 0
+    while index <= last
+        exe 'normal ' . index . 'G0'
+        call search('=','',index)
+        let eqPos = max([eqPos, col(".")])
+        let index = index + 1
+    endwhile
+    let index = first
+    while index <= last
+        exe 'normal ' . index . 'G0'
+        if search('=','',index) > 0
+            f=
+            let spacesNeeded = eqPos - col(".")
+            exe 'normal  i' . spacesNeeded
+        endif
+        let index = index + 1
+    endwhile
+endf
+
