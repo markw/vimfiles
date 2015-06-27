@@ -176,3 +176,4 @@ function! AlignEquals()
     endwhile
 endf
 
+vmap = :call AlignEquals()<cr>
