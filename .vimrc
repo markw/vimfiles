@@ -168,7 +168,9 @@ function! AlignEquals()
         if search('=','',index) > 0
             f=
             let spacesNeeded = eqPos - col(".")
-            exe 'normal  i' . spacesNeeded
+            if spacesNeeded > 0
+                exe 'normal  i' . spacesNeeded
+            endif
         endif
         let index = index + 1
     endwhile
