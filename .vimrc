@@ -166,10 +166,10 @@ function! AlignEquals()
     while index <= last
         exe 'normal ' . index . 'G0'
         if search('=','',index) > 0
-            f=
+            normal f=
             let spacesNeeded = eqPos - col(".")
             if spacesNeeded > 0
-                exe 'normal  i' . spacesNeeded
+                exe 'normal ' . spacesNeeded. 'i '
             endif
         endif
         let index = index + 1
