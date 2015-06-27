@@ -123,10 +123,12 @@ let g:project_use_nerdtree = 1
 set rtp+=~/.vim/bundle/vim-project/
 
 call project#rc("~/git")
-Project '~/git/main/cjo/member-web/', 'member-web'
-Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'
-Project '~/git/jaws', 'jaws'
-Project '~/git/jaws-configuration', 'jaws-configuration'
+if isdirectory("~/git")
+    Project '~/git/main/cjo/member-web/', 'member-web'
+    Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'
+    Project '~/git/jaws', 'jaws'
+    Project '~/git/jaws-configuration', 'jaws-configuration'
+endif
 
 function! s:CompareTwoLines()
     let thisLine = getline(".")
@@ -157,17 +159,15 @@ function! AlignEquals()
     let index = first
     let eqPos = 0
     while index <= last
-        exe 'normal ' . index . 'G0'
-        call search('=','',index)
-        let eqPos = max([eqPos, col(".")])
+        let idx = stridx(getline(index), '=')
+        let eqPos = max([eqPos, idx])
         let index = index + 1
     endwhile
     let index = first
     while index <= last
         exe 'normal ' . index . 'G0'
         if search('=','',index) > 0
-            normal f=
-            let spacesNeeded = eqPos - col(".")
+            let spacesNeeded = eqPos - col(".") + 1
             if spacesNeeded > 0
                 exe 'normal ' . spacesNeeded. 'i '
             endif
@@ -177,3 +177,54 @@ function! AlignEquals()
 endf
 
 vmap = :call AlignEquals()<cr>
+
+function! AlignVertically()
+
+    " capture indent for current line
+    let indent = repeat(' ', indent("."))
+
+    " capture all lines in selected range
+    let linesToFormat    = []
+    let numTokensPerLine = []
+
+    let firstLineNum = line("'<")
+    let lastLineNum  = line("'>")
+
+    let lineNum = firstLineNum
+
+    while lineNum <= lastLineNum
+        let tokens = split(getline(lineNum))
+        call add(linesToFormat, tokens)
+        call add(numTokensPerLine, len(tokens))
+        let lineNum = lineNum + 1
+    endwhile
+
+    let maxLengths = repeat([1], max(numTokensPerLine))
+
+    " calc max length for each token position
+
+    for tokens in linesToFormat
+        let tokenNum = 0
+        for token in tokens
+            let maxLengths[tokenNum] = max([maxLengths[tokenNum], len(token)])
+            let tokenNum = tokenNum + 1
+        endfor
+    endfor
+    
+    " re-render each line, formatted
+    let lineNum = firstLineNum
+    for tokens in linesToFormat
+        let s = indent
+        let tokenNum = 0
+        for token in tokens
+            let length = get(maxLengths,tokenNum) + 1
+            let mask = "%-" . length . "s"
+            let s = s . printf(mask, token)
+            let tokenNum = tokenNum + 1
+        endfor
+        call setline(lineNum, s)
+        let lineNum = lineNum + 1
+    endfor
+endfunction
+
+vmap <space> :call AlignVertically()<cr>
