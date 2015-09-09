@@ -91,6 +91,7 @@ nmap <silent><F3> :Buffers<cr>
 "-------------------------------------------------------------
 
 nnoremap <F2> :NERDTreeToggle<cr>
+nmap <Leader>t :NERDTreeFind<cr>
 
 cabbrev ntfb NERDTreeFromBookmark
 cabbrev ntt NERDTreeToggle
@@ -106,6 +107,7 @@ imap jj <esc>
 
 " syntastic settings
 
+set statusline=%n\ %t\ %M%r%=%l,%c
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -118,16 +120,22 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_javascript_checkers = ['jsxhint']
 let g:syntastic_java_checkers=['']
 
+let g:syntastic_mode_map = {
+    \ "mode" : "active" , 
+    \ "active_filetypes" : ["js","javascript"],
+    \ "passive_filetypes" : ["java","scala"] }
+
 " Projects
 let g:project_use_nerdtree = 1
 set rtp+=~/.vim/bundle/vim-project/
 
-call project#rc("~/git")
 if isdirectory("~/git")
+    call project#rc("~/git")
     Project '~/git/main/cjo/member-web/', 'member-web'
     Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'
     Project '~/git/jaws', 'jaws'
     Project '~/git/jaws-configuration', 'jaws-configuration'
+    Project '~/git/main/data/click-path-analyzer', 'click-path-analyzer'
 endif
 
 function! s:CompareTwoLines()
