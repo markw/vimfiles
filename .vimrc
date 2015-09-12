@@ -129,7 +129,7 @@ let g:syntastic_mode_map = {
 let g:project_use_nerdtree = 1
 set rtp+=~/.vim/bundle/vim-project/
 
-if isdirectory("~/git")
+if isdirectory("/home/mwilliams/git")
     call project#rc("~/git")
     Project '~/git/main/cjo/member-web/', 'member-web'
     Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'

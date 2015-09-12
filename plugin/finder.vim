@@ -235,7 +235,7 @@ endf
 function! s:SetPath() "{{{1
     let root = s:FindModuleRoot(fnamemodify(expand('%'),":p:h"))
     if len(root) > 0
-        exe 'setlocal path='.root.'/src/**/'
+        exe 'setlocal path='.root.'/src/**,'.root.'/client/**'
     endif
 endf
 
