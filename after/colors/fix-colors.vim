@@ -1,5 +1,5 @@
 if g:colors_name == 'desert' 
-    hi visual ctermfg=0
+    hi visual ctermfg=7
     hi comment ctermfg=242
     hi normal  guifg=#BBBBBB guibg=#162428
     hi nontext  guibg=#162428
