@@ -27,7 +27,7 @@ imap <F5> <esc><F5>
 "imap <buffer> { {}<left>
 "
 "
-function ClojureCommenter() range
+function! ClojureCommenter() range
     for n in range(a:firstline, a:lastline)
         let s = getline(n)
         if strpart(s,0,2) == ";;"
@@ -38,7 +38,7 @@ function ClojureCommenter() range
     endfor
 endf
 
-function SurroundWithPrintln() range
+function! SurroundWithPrintln() range
     call append(a:lastline,")")
     call append(a:firstline - 1,"(println")
 endf
