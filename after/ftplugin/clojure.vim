@@ -17,7 +17,7 @@ function! <SID>ExecCurrentBuffer()
     :exe '! ~/bin/clj '.expand("%:p")
 endf
 
-command! ExecCurrentBuffer -nargs 0 :call <SID>ExecCurrentBuffer()<cr>
+command! ExecCurrentBuffer -nargs=0 :call <SID>ExecCurrentBuffer()<cr>
 
 nmap <F5> :call <SID>ExecCurrentBuffer()<cr>
 imap <F5> <esc><F5>
