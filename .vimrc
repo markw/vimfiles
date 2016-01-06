@@ -11,6 +11,7 @@ Plugin 'tomtom/tlib_vim'
 Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'garbas/vim-snipmate'
 Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
@@ -22,6 +23,8 @@ Plugin 'scrooloose/syntastic'
 Plugin 'regedarek/ZoomWin'
 Plugin 'amiorin/vim-project'
 Plugin 'kien/ctrlp.vim'
+Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'bling/vim-airline'
 
 call vundle#end()
 
@@ -131,11 +134,14 @@ set rtp+=~/.vim/bundle/vim-project/
 
 if isdirectory("/home/mwilliams/git")
     call project#rc("~/git")
+    Project '~/git/main/cjo/api-int-server/', 'api-int-server'
     Project '~/git/main/cjo/member-web/', 'member-web'
     Project '~/git/main/cjo/member-web/src/main/webapp/javascript/report/clickPath', 'clickpath'
     Project '~/git/jaws', 'jaws'
     Project '~/git/jaws-configuration', 'jaws-configuration'
     Project '~/git/main/data/click-path-analyzer', 'click-path-analyzer'
+    Project 'sudoku'
+    File    '~/dev/clj/4clojure/sudoku.clj', 'sudoku'
 endif
 
 function! s:CompareTwoLines()
@@ -236,3 +242,18 @@ function! AlignVertically()
 endfunction
 
 vmap <space> :call AlignVertically()<cr>
+
+let g:airline_powerline_fonts = 0
+set laststatus=2
+if !exists('g:airline_symbols')
+let g:airline_symbols = {}
+endif
+
+" unicode symbols
+let g:airline_left_sep = '⮀'
+let g:airline_left_alt_sep = '⮁'
+let g:airline_right_sep = '⮂'
+let g:airline_right_alt_sep = '⮃'
+let g:airline_symbols.branch = '⭠'
+let g:airline_symbols.readonly = '⭤'
+let g:airline_symbols.linenr = '⭡'
