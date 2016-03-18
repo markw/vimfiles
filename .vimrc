@@ -21,10 +21,11 @@ Plugin 'guns/vim-clojure-static'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/syntastic'
 Plugin 'regedarek/ZoomWin'
-Plugin 'amiorin/vim-project'
+"Plugin 'amiorin/vim-project'
 Plugin 'kien/ctrlp.vim'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'bling/vim-airline'
+Plugin 'qpkorr/vim-bufkill'
 
 call vundle#end()
 
@@ -37,6 +38,8 @@ set copyindent autoindent smartindent
 set tabstop=4 shiftwidth=4 shiftround
 set nostartofline
 set wildignore=*.class,*.jar
+set notitle
+set mouse=a
 
 "set autochdir
 set number
@@ -83,11 +86,8 @@ au BufLeave * set nocursorline
 au WinEnter * set cursorline
 au WinLeave * set nocursorline
 
-au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
-color desert
-
-"nmap <silent><F3> :call ViewBufferList()<cr>
-nmap <silent><F3> :Buffers<cr>
+nmap <silent><F3> :call ViewBufferList()<cr>
+"nmap <silent><F3> :Buffers<cr>
 
 "-------------------------------------------------------------
 "NERDTree customizations
@@ -105,6 +105,7 @@ cabbrev bk Bookmark
 let NERDTreeHijackNetrw=1
 let NERDTreeWinSize=50
 let NERDTreeIgnore=['target','\.class$', '\~$']
+let NERDTreeMouseMode=3
 
 imap jj <esc>
 
@@ -129,10 +130,10 @@ let g:syntastic_mode_map = {
     \ "passive_filetypes" : ["java","scala"] }
 
 " Projects
-let g:project_use_nerdtree = 1
+let g:project_use_nerdtree = 0
 set rtp+=~/.vim/bundle/vim-project/
 
-if isdirectory("/home/mwilliams/git")
+if isdirectory("/Users/mwilliams/git")
     call project#rc("~/git")
     Project '~/git/main/cjo/api-int-server/', 'api-int-server'
     Project '~/git/main/cjo/member-web/', 'member-web'
@@ -142,6 +143,17 @@ if isdirectory("/home/mwilliams/git")
     Project '~/git/main/data/click-path-analyzer', 'click-path-analyzer'
     Project 'sudoku'
     File    '~/dev/clj/4clojure/sudoku.clj', 'sudoku'
+
+    FileList ['~/git/cis-194-winter-2016/test/Homework/Week05Spec.hs', '~/git/cis-194-winter-2016/src/Homework/Week05/Assignment.hs'], 'haskell-week5'
+    Callback  'haskell-week5', 'HaskellTests'
+
+    FileList ['~/git/cis-194-winter-2016/test/Homework/Week06Spec.hs', '~/git/cis-194-winter-2016/src/Homework/Week06/Assignment.hs'], 'haskell-week6'
+    Callback  'haskell-week6', 'HaskellTests'
+
+    FileList ['~/git/cis-194-winter-2016/test/Homework/Week07Spec.hs', '~/git/cis-194-winter-2016/src/Homework/Week07/Assignment.hs'], 'haskell-week7'
+    Callback  'haskell-week7', 'HaskellTests'
+
+    FileList ['~/git/cis-194-winter-2016/test/Homework/Week09Spec.hs', '~/git/cis-194-winter-2016/src/Homework/Week09/Assignment.hs'], 'haskell-week9'
 endif
 
 function! s:CompareTwoLines()
@@ -245,15 +257,30 @@ vmap <space> :call AlignVertically()<cr>
 
 let g:airline_powerline_fonts = 0
 set laststatus=2
+
 if !exists('g:airline_symbols')
 let g:airline_symbols = {}
 endif
 
-" unicode symbols
-let g:airline_left_sep = '⮀'
-let g:airline_left_alt_sep = '⮁'
-let g:airline_right_sep = '⮂'
-let g:airline_right_alt_sep = '⮃'
-let g:airline_symbols.branch = '⭠'
-let g:airline_symbols.readonly = '⭤'
-let g:airline_symbols.linenr = '⭡'
+" powerline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+
+set titleold=
+
+au ColorScheme * so $HOME/.vim/after/colors/fix-colors.vim
+let g:solarized_termcolors=256
+let g:solarized_termtrans=1
+set bg=dark
+color solarized
+let macvim_skip_colorscheme=1
+
+map <F6> :bn<cr>
+map <S-F6> :sbn<cr>
+map <leader><F6> :vert :sbn<cr>
+map <tab> <c-w>w

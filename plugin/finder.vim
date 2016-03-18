@@ -21,12 +21,14 @@ endf
 
 function! s:CreateVimIndexes()    "{{{1
   let root = fnamemodify(s:FindProjectRoot(),":p:h")
+  echo "root=".root
   let srcdirs = map(finddir('src',root.'/**5',-1),"fnamemodify(v:val,':p')")
   " a tragically ugly hack
   call add(srcdirs, root.'/cjo/member-web/client/test')
   " end of tragically ugly hack
   echo "Building index file: ".root.'/.vimindex'
-  call system('find '.join(srcdirs,' ').' -type f -fprint '.root. '/.vimindex 2> /dev/null')
+  echo 'find '.join(srcdirs,' ').' -type f -print '.root. '/.vimindex 2> /dev/null'
+  call system('find '.join(srcdirs,' ').' -type f -print > '.root. '/.vimindex 2> /dev/null')
   echo "Done."
 endf
 
