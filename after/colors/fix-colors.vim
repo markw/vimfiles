@@ -17,11 +17,11 @@ if g:colors_name == 'desert'
 endif
 
 if g:colors_name == 'solarized'
-    hi Folded cterm=NONE ctermbg=NONE ctermfg=88
+    hi Folded cterm=NONE ctermbg=NONE ctermfg=95
     "hi normal ctermfg=247
-    "hi LineNr ctermbg=0
+    "hi LineNr ctermbg=235
     hi CursorLineNr ctermfg=142
     hi Comment ctermfg=232
-    hi Special ctermfg=67
+    hi Special ctermfg=67 guifg=palegreen3
     hi ErrorMsg cterm=none ctermbg=88 ctermfg=15
 endif
