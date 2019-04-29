@@ -31,7 +31,7 @@ function! <sid>GenerateList()
   let width=10
   while i <= maxbuf
     if buflisted(i)
-      let bufname = fnamemodify(bufname(i),':t')
+      let bufname = printf("%-25s %s", fnamemodify(bufname(i),':t'), fnamemodify(bufname(i),':h'))
       call add(s:buflist, [bufname, i])
       let width = max([width, len(bufname)])
     endif
