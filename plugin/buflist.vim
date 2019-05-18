@@ -24,24 +24,18 @@ function! ViewBufferList()
 endf
 
 function! <sid>GenerateList()
-  let cur_buf = bufnr('')
+  let cur_buf = bufnr('%')
   let s:buflist = []
-  let maxbuf = bufnr('$')
-  let i=1 
-  let width=10
-  while i <= maxbuf
-    if buflisted(i)
-      let bufname = printf("%-25s %s", fnamemodify(bufname(i),':t'), fnamemodify(bufname(i),':h'))
-      call add(s:buflist, [bufname, i])
-      let width = max([width, len(bufname)])
-    endif
-    let i = i+1
-  endwhile
+  let nums = filter(s:mru, 'buflisted(v:val)')
+  for n in nums
+    let fname = bufname(n)
+    let bufname = printf("%-25s %s", fnamemodify(fname,':t'), fnamemodify(fname,':h'))
+    call add(s:buflist, [bufname, n])
+  endfor
   if len(s:buflist) < 2
       call s:Error("Not enough buffers")
       return
   endif
-  call sort(s:buflist)
   silent! exe ':silent! :topleft :split __buffer_list__'
   let cursor_line=1
   for [bufname,bufnum] in s:buflist  
@@ -100,3 +94,22 @@ function! <sid>DeleteSelectedBuffer()
     bwipeout
   endif
 endf
+
+let s:mru = []
+
+function! <SID>UpdateMru(n)
+    if (!buflisted(a:n))
+        return
+    endif
+    call filter(s:mru, 'v:val != '.a:n)
+    call insert(s:mru, a:n)
+endf
+
+function! <SID>MruEchoBuffers()
+    echo filter(s:mru, 'buflisted(v:val)')
+endf
+
+au BufCreate,BufAdd,BufEnter * call s:UpdateMru(bufnr('%'))
+
+map <F12> :call <SID>MruEchoBuffers()<CR>
+
