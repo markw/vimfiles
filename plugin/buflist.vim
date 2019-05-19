@@ -21,7 +21,7 @@ function! ViewBufferList()
   endif
 
   let s:current_bufnr = bufnr('%')
-  call <sid>GenerateList()
+  call <sid>GenerateList(function("s:MruComparator"))
 endf
 
 function! <sid>FormatBufName(fhead,ftail,len)
@@ -30,7 +30,7 @@ function! <sid>FormatBufName(fhead,ftail,len)
     return printf(l:mask, a:ftail, a:fhead)
 endf
 
-function! <sid>GenerateList()
+function! <sid>GenerateList(comparator)
   let nums = filter(s:mru, 'buflisted(v:val)')
   let maxlen = 0
   let s:buflist = []
@@ -45,9 +45,7 @@ function! <sid>GenerateList()
       call s:Error("Not enough buffers")
       return
   endif
-  if exists("s:sort_order")
-      call sort(s:buflist, s:sort_order)
-  endif
+  call sort(s:buflist, a:comparator)
   if bufexists(bufnr("__buffer_list__"))
     setlocal modifiable
     silent 1,$delete
@@ -90,18 +88,15 @@ function! <sid>MruComparator(a,b)
 endf
 
 function! <sid>SortByName()
-    let s:sort_order = function("s:NameComparator")
-    call s:GenerateList()
+    call s:GenerateList(function("s:NameComparator"))
 endf
 
 function! <sid>SortByMru()
-    let s:sort_order = function("s:MruComparator")
-    call s:GenerateList()
+    call s:GenerateList(function("s:MruComparator"))
 endf
 
 function! <sid>SortByPath()
-    let s:sort_order = function("s:PathComparator")
-    call s:GenerateList()
+    call s:GenerateList(function("s:PathComparator"))
 endf
 
 function! <sid>SelectedBuffer()
