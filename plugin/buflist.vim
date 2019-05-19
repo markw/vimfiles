@@ -123,7 +123,7 @@ function! <sid>InitMru()
     let l:bufnr = bufnr('$')
     while l:bufnr > 0
         call s:UpdateMru(l:bufnr)
-        let l:bufnr = l:bufnr - 1
+        let l:bufnr -= 1
     endwhile
 endf
 
