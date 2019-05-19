@@ -20,6 +20,7 @@ function! ViewBufferList()
       return
   endif
 
+  let s:current_bufnr = bufnr('%')
   call <sid>GenerateList()
 endf
 
@@ -30,7 +31,6 @@ function! <sid>FormatBufName(fhead,ftail,len)
 endf
 
 function! <sid>GenerateList()
-  let cur_buf = bufnr('%')
   let nums = filter(s:mru, 'buflisted(v:val)')
   let maxlen = 0
   let s:buflist = []
@@ -45,10 +45,18 @@ function! <sid>GenerateList()
       call s:Error("Not enough buffers")
       return
   endif
-  silent! exe ':silent! :topleft :split __buffer_list__'
+  if exists("s:sort_order")
+      call sort(s:buflist, s:sort_order)
+  endif
+  if bufexists(bufnr("__buffer_list__"))
+    setlocal modifiable
+    silent 1,$delete
+  else
+    silent! exe ':silent! :topleft :split __buffer_list__'
+  endif
   let cursor_line=1
   for [fhead, ftail, bufnum] in s:buflist
-    if cur_buf == bufnum | let cursor_line = line('$') | endif
+    if s:current_bufnr == bufnum | let cursor_line = line('$') | endif
     call append(line('$'), s:FormatBufName(fhead, ftail, maxlen))
   endfor
   :1delete _
@@ -60,6 +68,40 @@ function! <sid>GenerateList()
   map <silent><buffer>v    :call <sid>EditSelectedBufferInVSplit()<cr>
   map <silent><buffer>q    :bwipeout<cr>
   map <silent><buffer>d    :call <sid>DeleteSelectedBuffer()<cr>
+  map <silent><buffer>n    :call <sid>SortByName()<cr>
+  map <silent><buffer>m    :call <sid>SortByMru()<cr>
+  map <silent><buffer>p    :call <sid>SortByPath()<cr>
+endf
+
+function! <sid>Compare(a,b)
+    return a:a == a:b ? 0 : a:a > a:b ? 1 : -1
+endf
+
+function! <sid>NameComparator(a,b)
+    return <sid>Compare(a:a[1], a:b[1])
+endf
+
+function! <sid>PathComparator(a,b)
+    return <sid>Compare(a:a[0], a:b[0])
+endf
+
+function! <sid>MruComparator(a,b)
+    return 0
+endf
+
+function! <sid>SortByName()
+    let s:sort_order = function("s:NameComparator")
+    call s:GenerateList()
+endf
+
+function! <sid>SortByMru()
+    let s:sort_order = function("s:MruComparator")
+    call s:GenerateList()
+endf
+
+function! <sid>SortByPath()
+    let s:sort_order = function("s:PathComparator")
+    call s:GenerateList()
 endf
 
 function! <sid>SelectedBuffer()
