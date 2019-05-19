@@ -47,7 +47,7 @@ function! s:FindFile(dir,...)  "{{{1
 endf
 
 function! s:FindModuleRoot(dir) "{{{1
-    return s:FindFile(a:dir,"pom.xml", "build.sbt")
+    return s:FindFile(a:dir,"pom.xml", "build.sbt","build.gradle")
 endf
 
 
