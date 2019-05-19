@@ -78,7 +78,7 @@ map <F6> :bn<cr>
 map <S-F6> :sbn<cr>
 map <leader><F6> :vert :sbn<cr>
 "map <tab> <c-w>w
-map <Leader>g :grep <cword><cr>
+map <Leader>g :silent! :grep! <cword><cr>:cl<cr>
 nmap <silent><F3> :call ViewBufferList()<cr>
 "nmap <silent><F3> :Buffers<cr>
 
