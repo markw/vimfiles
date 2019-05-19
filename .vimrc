@@ -1,6 +1,9 @@
 set nocompatible
 let mapleader = ","
-set termguicolors
+
+if has('termguicolors')
+    set termguicolors
+endif
 
 set rtp+=~/.vim/bundle/vundle/
 filetype off
