@@ -68,7 +68,7 @@ function! <sid>GenerateList()
   map <silent><buffer><cr> :call <sid>EditSelectedBuffer()<cr>
   map <silent><buffer>s    :call <sid>EditSelectedBufferInSplit()<cr>
   map <silent><buffer>v    :call <sid>EditSelectedBufferInVSplit()<cr>
-  map <silent><buffer>q    :bwipeout<cr>
+  map <silent><buffer>q    :bwipeout<cr>:wincmd p<cr>
   map <silent><buffer>d    :call <sid>DeleteSelectedBuffer()<cr>
   map <silent><buffer>n    :call <sid>SortByName()<cr>
   map <silent><buffer>m    :call <sid>SortByMru()<cr>
