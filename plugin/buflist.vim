@@ -21,6 +21,7 @@ function! ViewBufferList()
   endif
 
   let s:current_bufnr = bufnr('%')
+  let s:filterstr = ""
 
   if !exists("s:comparator")
       let s:comparator = function("s:MruComparator")
@@ -42,10 +43,12 @@ function! <sid>GenerateList()
     let fname = bufname(n)
     let ftail = fnamemodify(fname,':t')
     let fhead = fnamemodify(fname,':h')
-    let maxlen = max([maxlen, len(ftail)])
-    call add(s:buflist, [fhead, ftail, n])
+    if empty(s:filterstr) || ftail =~ s:filterstr || fhead =~ s:filterstr
+        let maxlen = max([maxlen, len(ftail)])
+        call add(s:buflist, [fhead, ftail, n])
+    endif
   endfor
-  if len(s:buflist) < 2
+  if len(s:buflist) < 2 && empty(s:filterstr)
       call s:Error("Not enough buffers")
       return
   endif
@@ -73,6 +76,7 @@ function! <sid>GenerateList()
   map <silent><buffer>n    :call <sid>SortByName()<cr>
   map <silent><buffer>m    :call <sid>SortByMru()<cr>
   map <silent><buffer>p    :call <sid>SortByPath()<cr>
+  map <silent><buffer>f    :call <sid>FilterList()<cr>
 endf
 
 function! <sid>Compare(a,b)
@@ -145,6 +149,13 @@ function! <sid>DeleteSelectedBuffer()
   if len(s:buflist) == 0
     bwipeout
   endif
+endf
+
+let s:filterstr = ""
+
+function! <sid>FilterList()
+    let s:filterstr = input("Filter:")
+    call <sid>GenerateList()
 endf
 
 let s:mru = []
