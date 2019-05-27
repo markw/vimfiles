@@ -113,34 +113,48 @@ function! <sid>SortByPath()
 endf
 
 function! <sid>SelectedBuffer()
+  if len(s:buflist) == 0
+      return 0
+  endif
   let l:bufinfo = get(s:buflist, line('.')-1)
   return get(l:bufinfo, 2)
 endf
 
 function!<sid>SelectAndClose()
   let l:bufnum = <sid>SelectedBuffer()
-  bwipeout
-  wincmd p
+  if l:bufnum > 0
+    bwipeout
+    wincmd p
+  endif
   return l:bufnum
 endf
 
 function! <sid>EditSelectedBuffer()
   let l:bufnum = <sid>SelectAndClose()
-  exe ':b'.l:bufnum
+  if l:bufnum > 0
+    exe ':b'.l:bufnum
+  endif
 endf
 
 function! <sid>EditSelectedBufferInSplit()
   let l:bufnum = <sid>SelectAndClose()
-  exe ':sb'.l:bufnum
+  if l:bufnum > 0
+    exe ':sb'.l:bufnum
+  endif
 endf
 
 function! <sid>EditSelectedBufferInVSplit()
   let l:bufnum = <sid>SelectAndClose()
-  exe ':vertical sb'.l:bufnum
+  if l:bufnum > 0
+    exe ':vertical sb'.l:bufnum
+  endif
 endf
 
 function! <sid>DeleteSelectedBuffer()
   let l:bufnum = <sid>SelectedBuffer()
+  if l:bufnum == 0
+    return
+  endif
   setlocal modifiable
   delete _
   setlocal nomodifiable
