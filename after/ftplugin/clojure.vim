@@ -11,7 +11,8 @@ function! <SID>ExecCurrentBuffer()
     if &modified
         :w!
     endif
-    :exe '! ~/bin/clj '.expand("%:p")
+    ":exe '! ~/bin/clj '.expand("%:p")
+    :exe '! clj '.expand("%:p")
 endf
 
 command! ExecCurrentBuffer -nargs=0 :call <SID>ExecCurrentBuffer()<cr>
@@ -21,7 +22,7 @@ function! <SID>ExecMain()
     if &modified
         :w!
     endif
-    :exe '! ~/bin/clj '.expand("%:p")
+    :exe '! clj '.expand("%:p")
 endf
 
 nmap <F5> :call <SID>ExecCurrentBuffer()<cr>

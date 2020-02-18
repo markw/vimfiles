@@ -10,8 +10,5 @@ endf
 set formatprg=npx\ prettier\ --stdin-filepath\ %
 
 set foldmethod=syntax
-
-autocmd BufReadPost *.js set foldlevel=0 | set foldnestmax=2
-
-autocmd BufReadPost *.test.js set foldlevel=2 | set foldnestmax=3
+set foldlevel=0 foldnestmax=1
 

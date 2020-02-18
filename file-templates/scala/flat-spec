@@ -6,7 +6,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 
 @RunWith(classOf[JUnitRunner])
-class SomethingTest extends FlatSpec with Matchers {
+class ${CLASS_NAME} extends FlatSpec with Matchers {
 
     "Something" should "do something useful" in {
 

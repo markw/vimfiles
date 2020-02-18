@@ -1,1 +1,2 @@
-nmap <F5> :exe  "!" . fnamemodify("%",":p")<cr>
+
+nmap <F5> :exe  "! " . fnamemodify(expand("%"),":p")<cr>

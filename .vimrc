@@ -12,6 +12,8 @@ filetype off
 " vundle
 "-------------------------------------------------------------
 call vundle#begin()
+Plugin 'leafgarland/typescript-vim'
+Plugin 'HerringtonDarkholme/yats.vim'
 Plugin 'gmarik/vundle'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ervandew/supertab'
@@ -40,6 +42,8 @@ Plugin 'wincent/command-t'
 "Bundle 'venantius/vim-cljfmt'
 Plugin 'eraserhd/parinfer-rust'
 Plugin 'zcodes/vim-colors-basic'
+Plugin 'junegunn/fzf'
+Plugin 'udalov/kotlin-vim'
 
 call vundle#end()
 
@@ -81,7 +85,7 @@ map <F6> :bn<cr>
 map <S-F6> :sbn<cr>
 map <leader><F6> :vert :sbn<cr>
 "map <tab> <c-w>w
-map <Leader>g :silent! :grep! <cword><cr>:cl<cr>
+map <Leader>g :grep! <cword><cr>:redraw<cr>:cl<cr>
 nmap <silent><F3> :call ViewBufferList()<cr>
 "nmap <silent><F3> :Buffers<cr>
 
@@ -134,6 +138,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
+let g:syntastic_python_flake8_post_args="--max-line-length=120"
 
 let g:syntastic_javascript_checkers = ['jsxhint']
 let g:syntastic_java_checkers=['']
