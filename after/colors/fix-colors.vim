@@ -16,6 +16,11 @@ if g:colors_name == 'desert'
     hi SyntasticStyleWarning ctermbg=yellow ctermfg=black
 endif
 
+if g:colors_name == 'PaperColor'
+    hi Folded guifg=Grey60 guibg=Grey15
+    hi Type guifg=#4090B0
+endif
+
 if g:colors_name == 'solarized'
     hi Folded cterm=NONE ctermbg=NONE ctermfg=95
     hi normal ctermfg=247

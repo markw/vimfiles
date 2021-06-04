@@ -12,28 +12,14 @@ function! <SID>ExecCurrentBuffer()
         :w!
     endif
     ":exe '! ~/bin/clj '.expand("%:p")
-    :exe '! clj '.expand("%:p")
+    :exe '! clj -M '.expand("%:p")
 endf
 
 command! ExecCurrentBuffer -nargs=0 :call <SID>ExecCurrentBuffer()<cr>
 
-function! <SID>ExecMain()
-    :stopinsert
-    if &modified
-        :w!
-    endif
-    :exe '! clj '.expand("%:p")
-endf
-
 nmap <F5> :call <SID>ExecCurrentBuffer()<cr>
 imap <F5> <esc><F5>
-nmap <F9> :call <SID>ExecMain()<cr>
 
-"imap <buffer> ( ()<left>
-"imap <buffer> [ []<left>
-"imap <buffer> { {}<left>
-"
-"
 function! ClojureCommenter() range
     for n in range(a:firstline, a:lastline)
         let s = getline(n)
@@ -52,8 +38,8 @@ endf
 
 let maplocalleader = ","
 
-vmap ; :call ClojureCommenter()<cr>
-vmap <LocalLeader>p :call SurroundWithPrintln()<cr>
-nmap <LocalLeader>e :%Eval<cr>
-
-
+vmap <buffer> ; :call ClojureCommenter()<cr>
+vmap <buffer> <LocalLeader>p :call SurroundWithPrintln()<cr>
+nmap <buffer> <LocalLeader>e :Eval<cr>
+nmap <buffer> <LocalLeader>E :%Eval<cr>
+nmap <buffer> <LocalLeader>, cpp

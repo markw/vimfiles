@@ -10,5 +10,6 @@ endf
 set formatprg=npx\ prettier\ --stdin-filepath\ %
 
 set foldmethod=syntax
-set foldlevel=0 foldnestmax=1
+set foldlevel=0 foldnestmax=2
+set sw=2
 

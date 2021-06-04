@@ -4,8 +4,8 @@ function! <SID>ExecCurrentBuffer()
     if &modified
         :w!
     endif
-    ":exe '! runghc '.expand("%:p")
-    :exe '! stack test'
+   :exe '! runghc '.expand("%:p")
+    ":exe '! stack test'
 endf
 
 nmap <F5> :call <SID>ExecCurrentBuffer()<cr>
