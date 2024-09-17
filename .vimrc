@@ -35,7 +35,7 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/syntastic'
 Plugin 'regedarek/ZoomWin'
 Plugin 'kien/ctrlp.vim'
-Plugin 'bling/vim-airline'
+"Plugin 'bling/vim-airline'
 Plugin 'mxw/vim-jsx'
 Plugin 'tomasiser/vim-code-dark'
 Plugin 'vim-scripts/oceandeep'
@@ -48,7 +48,13 @@ Plugin 'junegunn/fzf'
 Plugin 'udalov/kotlin-vim'
 Plugin 'frazrepo/vim-rainbow'
 Plugin 'romainl/flattened'
+Plugin 'prettier/vim-prettier'
+Plugin 'jparise/vim-graphql'
 
+Plugin 'nvim-tree/nvim-web-devicons' " optional, for file icons
+Plugin 'nvim-tree/nvim-tree.lua'
+Plugin 'yegappan/taglist'
+"Plugin 'powerline/powerline'
 call vundle#end()
 
 "-------------------------------------------------------------
@@ -75,7 +81,8 @@ set showcmd
 set updatetime=1000
 set clipboard=unnamed
 set tags=tags,./tags;
-set grepprg=rg\ -n\ -g\ '!node_modules'\ -g\ '!lib'
+set grepprg=rg\ -n\ -g\ '!node_modules'\ -g\ '!lib'\ -g\ '!tags'
+
 
 "-------------------------------------------------------------
 " key mappings
@@ -90,10 +97,11 @@ map <S-F6> :sbn<cr>
 map <leader><F6> :vert :sbn<cr>
 "map <tab> <c-w>w
 map <Leader>g :grep! <cword><cr>:redraw<cr>:cl<cr>
+map <Leader>f :FZF -q <cword><cr>
 nmap <silent><F3> :call ViewBufferList()<cr>
 "nmap <silent><F3> :Buffers<cr>
-nmap <silent><F7> :cp<cr>
-nmap <silent><F8> :cn<cr>
+nmap <silent><F7> :cp<cr>lz.
+nmap <silent><F8> :cn<cr>lz.
 
 "-------------------------------------------------------------
 " auto commands
@@ -123,7 +131,7 @@ nmap <Leader>t :NERDTreeFind<cr>
 cabbrev ntfb NERDTreeFromBookmark
 cabbrev ntt NERDTreeToggle
 cabbrev nt NERDTree
-cabbrev mt MavenTest %
+"cabbrev mt MavenTest %
 cabbrev bk Bookmark
 
 let NERDTreeHijackNetrw=1
@@ -148,10 +156,12 @@ let g:syntastic_python_flake8_post_args="--max-line-length=120"
 
 let g:syntastic_javascript_checkers = ['jsxhint']
 let g:syntastic_java_checkers=['']
+let g:syntastic_python_python_exec = 'python3'
+let g:syntastic_python_checkers = ['python']
 
 let g:syntastic_mode_map = {
     \ "mode" : "active" , 
-    \ "active_filetypes" : ["js","javascript"],
+    \ "active_filetypes" : ["js","javascript","ts"],
     \ "passive_filetypes" : ["java","scala","xml"] }
 
 let g:syntastic_html_tidy_args = "--custom-tags blocklevel"
@@ -165,23 +175,23 @@ let g:syntastic_html_tidy_args = "--custom-tags blocklevel"
 "-------------------------------------------------------------
 " airline / powerline
 "-------------------------------------------------------------
-let g:airline_powerline_fonts = 0
-set laststatus=2
-
-if !exists('g:airline_symbols')
-let g:airline_symbols = {}
-endif
-
-" powerline symbols
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
-let g:airline_theme='codedark'
-
+"let g:airline_powerline_fonts = 1
+"set laststatus=2
+"
+"if !exists('g:airline_symbols')
+"let g:airline_symbols = {}
+"endif
+"
+"" powerline symbols
+"let g:airline_left_sep = ''
+"let g:airline_left_alt_sep = ''
+"let g:airline_right_sep = ''
+"let g:airline_right_alt_sep = ''
+"let g:airline_symbols.branch = ''
+"let g:airline_symbols.readonly = ''
+"let g:airline_symbols.linenr = ''
+"let g:airline_theme='codedark'
+"
 set titleold=
 
 "-------------------------------------------------------------
@@ -193,10 +203,10 @@ let g:solarized_termtrans=1
 set bg=dark
 "color solarized
 "color codedark
-"color oceandeep
+color oceandeep
 let g:rainbow_guifgs = ['RoyalBlue3', 'DarkOrange3', 'Green', 'Orange', 'Yellow', 'DarkOrchid3', 'FireBrick']
 "color basic-dark
-color PaperColor
+"color PaperColor
 let macvim_skip_colorscheme=1
 
 "-------------------------------------------------------------
@@ -208,3 +218,18 @@ let g:jsx_ext_required = 0
 " ctrl-p
 "-------------------------------------------------------------
 let g:ctrlp_custom_ignore='.git,node_modules'
+
+let g:snipMate = { 'snippet_version' : 1 }
+
+noremap <F1> <esc>
+inoremap <F1> <esc>
+
+
+if has('cm')
+    set cm=blowfish2
+endif
+
+let g:python3_host_prog = expand('/Users/marwill10/.pyenv/shims/python3')
+
+
+"let g:tlist_javascript_settings = 'javascript;s:string;a:array;o:object;f:function'

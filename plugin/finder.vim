@@ -40,7 +40,7 @@ function! s:FindFile(dir,...)  "{{{1
                 return a:dir
             endif
         endfor
-        return (a:dir == '/' || toupper(a:dir) == 'C:\' || a:dir =~ 'zipfile:') ? '' : FindFile0(fnamemodify(a:dir,":h"), a:files)
+        return (a:dir == '.' || a:dir == '/' || toupper(a:dir) == 'C:\' || a:dir =~ 'zipfile:') ? '' : FindFile0(fnamemodify(a:dir,":h"), a:files)
     endf
     
     return FindFile0(a:dir, a:000)
